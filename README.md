@@ -1,13 +1,13 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/QfAIDTGi)
-# PROJECT NAME HERE (CHANGE THIS!!!!!)
+# Rock Paper Scissors PVP Game Server
  
-### GROUP NAME HERE (CHANGE THIS!!!!!)
+### LimbusNights
 
-Group Members Here (CHANGE THIS!!!!!)
+By Lucia Mercone and Jason Zhang
        
 ### Project Description:
 
-Explain what is this project. (CHANGE THIS!!!!!)
+This project is a rock paper scissor game server that allows users to pair up and play rock paper scissors against each other. 
   
 ### Instructions:
 
