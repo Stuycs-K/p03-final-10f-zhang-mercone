@@ -2,10 +2,12 @@
 
 This document must be updated daily every time you finish a work session.
 
-## Dave Kim  (CHANGE THIS!!!!! Also change the file name!)
+## Qiyujin Zhang  (CHANGE THIS!!!!! Also change the file name!)
 
-### 2024-01-02 - Brief description
-Expanded description including how much time was spent on task.
+### 2026-01-06 - Starting
+- Added to PROPOSAL.md
+- Created files that we are gonna use
+- Discussed about how the server will fork subservers for 2 clients
 
-### 2024-01-03 - Brief description
-Expanded description including how much time was spent on task.
+### 2026-01-07 - Brief description
+Expanded description including how much time was spent on task. 
