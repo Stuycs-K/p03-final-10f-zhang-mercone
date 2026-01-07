@@ -9,10 +9,10 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include 'Networking.h'
-#include 'GameLogic.h'
 
-#define MAX_CONNECTIONS 10
+#include "Networking.h"
+#include "GameLogic.h"
+
 
 // accept clients using server_accept
 // add clients to waiting queue

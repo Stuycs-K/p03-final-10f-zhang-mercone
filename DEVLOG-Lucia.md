@@ -20,3 +20,5 @@ This document must be updated daily every time you finish a work session.
 - Added necessary headers to files
 - Added commenting on files + small edits
 - Added further functions and a bit of the code for client
+
+### 2026-01-07
