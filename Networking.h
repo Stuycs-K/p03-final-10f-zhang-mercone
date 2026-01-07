@@ -13,9 +13,13 @@
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
+<<<<<<< HEAD
 
 #define MAX_CONNECTIONS 10
 
+=======
+#define PORT "12639"
+>>>>>>> 2ff284c1f1e3b9d711c6454c3f9e56664f31964c
 //function headers go here
 
 #endif

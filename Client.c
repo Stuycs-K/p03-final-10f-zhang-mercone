@@ -35,7 +35,7 @@
 	// a wrapper function that calls client_connect(char* IP, char* port)
 	// which returns connected socket descriptor.
 	int connect_to_server(char* IP){
-
+		client_connect(IP, PORT);
 	}
 
 	// optionally takes IP address from user input
@@ -45,9 +45,9 @@
 
 	int main(int argc, char* argv[]){
 		char * IP;
-			if (argc > 1){
-				strcpy(IP, argv[1]);
-			}
+		if (argc > 1){
+			strcpy(IP, argv[1]);
+		}
 
 		int server_socket = connect_to_server(IP);
 		client_loop();
