@@ -1,7 +1,5 @@
 #include "Networking.h"
 
-#include "networking.h"
-
 	/*Create and bind a socket.
 	* Place the socket in a listening state.
 	* returns the socket descriptor

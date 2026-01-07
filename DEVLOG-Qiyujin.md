@@ -12,4 +12,5 @@ This document must be updated daily every time you finish a work session.
 - Added function prototypes for client.c and server.c at home
 
 ### 2026-01-07 - Brief description
-Expanded description including how much time was spent on task. 
+- Started working on Server.c and imported Networking.c and .h from prior labs. 
+
