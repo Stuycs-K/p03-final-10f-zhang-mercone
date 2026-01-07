@@ -58,7 +58,7 @@
 	/*Connect to the server
 	 *return the to_server socket descriptor
 	 *blocks until connection is made.*/
-	int client_tcp_handshake(char * server_address) {
+	int client_connect(char* IP, char* port) {
 
 	  //getaddrinfo
 	  struct addrinfo * hints, * results;
@@ -66,7 +66,7 @@
 	  hints->ai_family = AF_INET;
 	  hints->ai_socktype = SOCK_STREAM;
 	  hints->ai_flags = AI_NUMERICHOST;	
-	  getaddrinfo(server_address,PORT,hints,&results);
+	  getaddrinfo(server_address,port,hints,&results);
 	  
 	  int serverd;//store the socket descriptor here
 	  //create the socket

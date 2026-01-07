@@ -14,20 +14,51 @@
 #include "GameLogic.h"
 
 
-// accept clients using server_accept
-// add clients to waiting queue
-// when 2 clients available: call fork_subserver(clientA, clinetB)
-// don't end unless ctrl-c
-void server_logic_loop(int server_fd, int num_connected){
-	//if a client_server handshake is successful, up num_connected by 1
-	//put the client's descriptor into an array
-	//if num_connected would be >= max #, backlog the connect and refuse it
-	if (num_connected <= MAX_CONNECTIONS){
-		for (int i = 0; i < num_connected / 2; i++) {
-			//for every two connected clients
-			//fork_subserver
+	// accept clients using server_accept
+	// add clients to waiting queue
+	// when 2 clients available: call fork_subserver(clientA, clinetB)
+	// don't end unless ctrl-c
+	void server_logic_loop(int server_fd){
+		int num_connected = 0;
+		int waitingQueue[MAX_CONNECTIONS];
+		for(int i = 0; i < MAX_CONNECTIONS; i ++){
+			waitingQueue[i] = NULL;
 		}
+		while (1){
+			int client_socket = server_tcp_handshake(listen_socket);
+			if (client_socket > -1){
+				printf ("SERVER: Client-Server handshake  successful.\n");
+			}
+			else {
+				printf("SERVER: %s\n",strerror(errno));
+			}
+			//if a client_server handshake is successful, up num_connected by 1
+			//put the client's descriptor into an array
+			//if num_connected would be >= max #, backlog the connect and refuse it
+			if (num_connected < MAX_CONNECTIONS){
+				waitingQueue[num_connected] = client_socket;
+				num_connected ++;
+				while(num_connected > 1){
+					fork_subserver(waitingQueue[0], waitingQueue[1]);
+					numConnected = moveClientsUp(waitingQueue, numConnected);
+				}
+			}
 		}
+	}
+	
+	// removes first 2 clients in the Queue. returns number of clients left in Queue;
+	int moveClientsUp(int[] Queue, int numClients){
+		int clientsleft = numClients;
+		for(int i = 0; i < numClients; i ++){
+			if(Queue[i+2]!= NULL){
+				Queue[i] = Queue[i+2];
+			}
+			else{
+				Queue[i] = NULL;
+				clientsleft--;
+			}
+		}
+		return clientsleft;
 	}
 
 	// creates a child process to run the match between clientA and clientB
@@ -42,20 +73,8 @@ void server_logic_loop(int server_fd, int num_connected){
 	int main (){
 		//one time setup for a listening socket
 		int listen_socket = server_setup();
+		server_logic_loop(listen_socket);
 
-		//set down/up counter
-		int num_connected = 0;
-		while (1){
-			int client_socket = server_tcp_handshake(listen_socket);
-			if (client_socket > -1){
-				printf ("SERVER: Client-Server handshake  successful.\n");
-			}
-			else {
-				printf("SERVER: %s\n",strerror(errno));
-			}
-			//server_logic_loop
-			//game logic here
-		}
 		return 0;
 	}
 
