@@ -10,8 +10,11 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+
 #ifndef NETWORKING_H
 #define NETWORKING_H
+
+#define MAX_CONNECTIONS 10
 
 //function headers go here
 

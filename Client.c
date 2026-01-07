@@ -9,8 +9,9 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include 'Networking.h'
-#include 'GameLogic.h'
+
+#include "Networking.h"
+#include "GameLogic.h"
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
 
@@ -23,15 +24,16 @@
 
 	void client_logic(int server_socket){
 		int gameEnd = 0;
+
+		int
 		while (gameEnd < 3){ //i.e., repeat until 3 rounds have been played
-			int bytes_received = recv(client_socket, buff, sizeof(buff) - 1, 0);
+			int bytes_received = recv(client_socket, buff, sizeof(int), 0);
 		} //end while loop
 		printf("Game ended.\n");
 	}
 
 	// a wrapper function that calls client_connect(char* IP, char* port)
 	// which returns connected socket descriptor.
-
 	int connect_to_server(char* IP){
 
 	}
@@ -47,7 +49,7 @@
 				strcpy(IP, argv[1]);
 			}
 
-		connect_to_server(IP);
+		int server_socket = connect_to_server(IP);
 		client_loop();
 
 		//before exiting, send a 'down' to server to reduce # of connections by 1
