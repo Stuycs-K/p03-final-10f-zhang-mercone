@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -8,6 +9,8 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#include "GameLogic.h"
 
 #define ROCK 0
 #define PAPER 1
