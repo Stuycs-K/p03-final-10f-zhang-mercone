@@ -3,3 +3,5 @@
 3. GameLogic.c
 4. Leaderboard.c
 5. networking.c
+
+This should be ready to be removed.
