@@ -22,8 +22,11 @@
 	// Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
 	void client_logic(int server_socket){
-		
-
+		int gameEnd = 0;
+		while (gameEnd < 3){ //i.e., repeat until 3 rounds have been played
+			int bytes_received = recv(client_socket, buff, sizeof(buff) - 1, 0);
+		} //end while loop
+		printf("Game ended.\n");
 	}
 
 	// a wrapper function that calls client_connect(char* IP, char* port)
@@ -37,7 +40,7 @@
 	// connects to the server (call connect_to_server)
 	// runs the client loop (call client_loop())
 	// close up socket at the end
-	
+
 	int main(int argc, char* argv[]){
 		char * IP;
 		if (argc > 1){
@@ -45,5 +48,8 @@
 		}
 
 		connect_to_server(IP);
+		client_loop();
 
+		//before exiting, send a 'down' to server to reduce # of connections by 1
+		exit(0);
 	}
