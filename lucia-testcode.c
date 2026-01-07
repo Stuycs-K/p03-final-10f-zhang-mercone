@@ -1,5 +1,3 @@
-
-
 #define ROCK 0
 #define PAPER 1
 #define SCISSORS 2
