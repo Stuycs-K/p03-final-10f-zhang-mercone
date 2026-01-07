@@ -26,7 +26,7 @@ void client_logic(int server_socket){
 	int gamesPlayed = 0;
 
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		int bytes_received = recv(server_socket, gamesPlayed, sizeof(int), 0);
+		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 		if (bytes_received < 0){
 			printf("Client exiting due to empty message...\n");
 			exit(0);
@@ -37,9 +37,9 @@ void client_logic(int server_socket){
 			while (moveint < 0){ //while loop to ensure the sent value is greater than -1
 				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
 				char move[16];
-				 moveint = -1;
+				moveint = -1;
 				fgets (move, 16, stdin);
-				sscanf ("%d", &moveint);
+				sscanf (move, "%d", &moveint);
 				printf("moveint %d\n", moveint);
 			}
 			send(server_socket, moveint, sizeof(int), 0);
@@ -52,6 +52,7 @@ void client_logic(int server_socket){
 	// which returns connected socket descriptor.
 	int connect_to_server(char* IP){
 		client_connect(IP, PORT);
+		return 1;
 	}
 
 	// optionally takes IP address from user input
@@ -59,7 +60,7 @@ void client_logic(int server_socket){
 	// runs the client loop (call client_logic())
 	// close up socket at the end
 	int main(int argc, char* argv[]){
-		char * IP;
+		char* IP = "127.0.0.1";
 		if (argc > 1){
 			strcpy(IP, argv[1]);
 		}
