@@ -16,5 +16,8 @@
 #define MAX_CONNECTIONS 10
 #define PORT "12639"
 //function headers go here
-
+void err(int i, char*message);
+int server_setup();
+int client_connect(char* IP, char* port) ;
+int server_tcp_handshake(int listen_socket);
 #endif
