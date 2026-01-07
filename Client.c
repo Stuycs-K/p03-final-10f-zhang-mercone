@@ -9,8 +9,8 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include 'Networking.h'
-#include 'GameLogic.h'
+#include "Networking.h"
+#include "GameLogic.h"
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
 
@@ -22,6 +22,7 @@
 	// Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
 	void client_logic(int server_socket){
+		
 
 	}
 
@@ -29,7 +30,7 @@
 	// which returns connected socket descriptor.
 
 	int connect_to_server(char* IP){
-
+		client_connect(IP, PORT);
 	}
 
 	// optionally takes IP address from user input
@@ -39,9 +40,9 @@
 	
 	int main(int argc, char* argv[]){
 		char * IP;
-			if (argc > 1){
-				strcpy(IP, argv[1]);
-			}
+		if (argc > 1){
+			strcpy(IP, argv[1]);
+		}
 
 		connect_to_server(IP);
 

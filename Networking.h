@@ -12,7 +12,7 @@
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
-
+#define PORT "12639"
 //function headers go here
 
 #endif
