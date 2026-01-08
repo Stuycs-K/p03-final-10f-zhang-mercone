@@ -93,10 +93,21 @@
 	// clearer substitute for calling signal(SIGNUM, sighandler)
 	// checks for SIGCHLD and SIGINT
 	void setup_sighandlers(){
-
+		signal(SIGINT, sighandler);
+		signal(SIGCHLD, sighandler);
 	}
 
 	// handles SIGCHLD and SIGINT
 	static void sighandler(int signo){
-
+		if(signo == SIGINT){
+			printf("Server closed. Hope you had fun! \n");
+		}
+		if(signo == SIGCHLD){
+			int status;
+			wait(&status);
+			if(!WIFEXITED(STATUS)){
+				printf("Child exited due to abnormally.\n");
+			}
+		}
 	}
+	
