@@ -1,5 +1,5 @@
 #include "Networking.h"
-
+#include "GameLogic.h"
 	/*Create and bind a socket.
 	* Place the socket in a listening state.
 	* returns the socket descriptor
@@ -80,13 +80,24 @@
 	}
 
 
-
-
 	void err(int i, char*message){
 	  if(i < 0){
 		  printf("Error: %s - %s\n",message, strerror(errno));
 		exit(1);
 	  }
+	}
+	
+	
+	void run_match(int fdA, int fdB){
+		int stillWantGame = 1;
+		while(stillWantGame){
+			int AMove = -1;
+			int BMove = -1;
+			fd_set recv_fds;
+			FD_ZERO(&read_fds);
+			FD_SET(FDA, &read_fds);
+			recv(fdA, AMove, sizeof(int), 0)
+		}		
 	}
 	
 
