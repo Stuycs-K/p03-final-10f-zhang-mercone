@@ -65,6 +65,17 @@
 	// Child: closes listening socket, call run_match(clientA_fd, clientB_fd). exit when match ends
 	// Parent: closes both client sockets. Return to logic loop.
 	void fork_subserver(int clientA_fd, int clientB_fd){
+		int pid = fork();
+		if(pid == 0){ // parent
+			close(clientA_fd);
+			close(clientB_fd);
+			return;
+		}
+		else{ // child
+			close(server_fd);
+			run_match(clientA_fd, clientB_fd);
+			exit(0);
+		}
 
 	}
 
@@ -74,7 +85,7 @@
 		//one time setup for a listening socket
 		int listen_socket = server_setup();
 		server_logic_loop(listen_socket);
-
+		close(listen_socket);
 		return 0;
 	}
 
