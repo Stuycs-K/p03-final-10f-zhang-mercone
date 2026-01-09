@@ -88,16 +88,43 @@
 	}
 	
 	
-	void run_match(int fdA, int fdB){
+	int run_match(int fdA, int fdB){
 		int stillWantGame = 1;
-		while(stillWantGame){
+		int gamesPlayed = 0;
+		int Ascore = 0;
+		int Bscore = 0;
+		while(stillWantGame == 1){
 			int AMove = -1;
 			int BMove = -1;
-			fd_set recv_fds;
-			FD_ZERO(&read_fds);
-			FD_SET(FDA, &read_fds);
-			recv(fdA, AMove, sizeof(int), 0)
-		}		
+			while (AMove == -1 || BMove == -1){
+				fd_set recv_fds;
+				FD_ZERO(&recv_fds);
+				FD_SET(fdA, &recv_fds);
+				FD_SET(fdB, &recv_fds);
+				int maxFD;
+				if(fdA > fdB){
+					maxFD = fdA;
+				}
+				else{
+					maxFD = fdB;
+				}
+				
+				int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+				if(FD_ISSET(fdA, &recv_fds)){
+					if(recv(fdA, &AMove, sizeof(int), 0) == 0){
+						stillWantGame = 0; 
+					}
+				}
+				if(FD_ISSET(fdB, &recv_fds)){
+					if(recv(fdB, &BMove, sizeof(int), 0) == 0){
+						stillWantGame = 0; 
+					}
+				}
+			}
+			
+			scorehandler (gamesPlayed, Ascore, Bscore, AMove, BMove);
+		}
+		return(stillWantGame);
 	}
 	
 

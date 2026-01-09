@@ -22,10 +22,10 @@
 		int num_connected = 0;
 		int waitingQueue[MAX_CONNECTIONS];
 		for(int i = 0; i < MAX_CONNECTIONS; i ++){
-			waitingQueue[i] = NULL;
+			waitingQueue[i] = -1;
 		}
 		while (1){
-			int client_socket = server_tcp_handshake(listen_socket);
+			int client_socket = server_tcp_handshake(server_fd);
 			if (client_socket > -1){
 				printf ("SERVER: Client-Server handshake  successful.\n");
 			}
@@ -40,24 +40,20 @@
 				num_connected ++;
 				while(num_connected > 1){
 					fork_subserver(waitingQueue[0], waitingQueue[1]);
-					numConnected = moveClientsUp(waitingQueue, numConnected);
+					num_Connected = moveClientsUp(waitingQueue, numConnected);
 				}
 			}
 		}
 	}
 	
 	// removes first 2 clients in the Queue. returns number of clients left in Queue;
-	int moveClientsUp(int[] Queue, int numClients){
+	int moveClientsUp(int Queue[], int numClients){
 		int clientsleft = numClients;
-		for(int i = 0; i < numClients; i ++){
-			if(Queue[i+2]!= NULL){
-				Queue[i] = Queue[i+2];
-			}
-			else{
-				Queue[i] = NULL;
-				clientsleft--;
-			}
+		for(int i = 0; i < numClients -2; i ++){
+			Queue[i] = Queue[i+2];
 		}
+		Queue[numClients-1] = -1;
+		Queue[numClients-2] = -1;
 		return clientsleft;
 	}
 
@@ -66,13 +62,12 @@
 	// Parent: closes both client sockets. Return to logic loop.
 	void fork_subserver(int clientA_fd, int clientB_fd){
 		int pid = fork();
-		if(pid == 0){ // parent
+		if(pid != 0){ // parent
 			close(clientA_fd);
 			close(clientB_fd);
 			return;
 		}
 		else{ // child
-			close(server_fd);
 			run_match(clientA_fd, clientB_fd);
 			exit(0);
 		}
@@ -105,7 +100,7 @@
 		if(signo == SIGCHLD){
 			int status;
 			wait(&status);
-			if(!WIFEXITED(STATUS)){
+			if(!WIFEXITED(status)){
 				printf("Child exited due to abnormally.\n");
 			}
 		}
