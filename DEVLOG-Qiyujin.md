@@ -14,3 +14,7 @@ This document must be updated daily every time you finish a work session.
 ### 2026-01-07 - Brief description
 - Started working on Server.c and imported Networking.c and .h from prior labs. 
 
+### 2026-01-08 - Subserver logic
+- Added select to subserver logic. 
+- Fixed bugs in server code. 
+
