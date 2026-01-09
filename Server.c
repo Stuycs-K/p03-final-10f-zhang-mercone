@@ -1,15 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <signal.h>
-#include <netdb.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
 #include "Networking.h"
 #include "GameLogic.h"
 
@@ -19,7 +7,7 @@
 	// when 2 clients available: call fork_subserver(clientA, clinetB)
 	// don't end unless ctrl-c
 	void server_logic_loop(int server_fd){
-		int num_connected = 0;
+		int num_Connected = 0;
 		int waitingQueue[MAX_CONNECTIONS];
 		for(int i = 0; i < MAX_CONNECTIONS; i ++){
 			waitingQueue[i] = -1;
@@ -35,12 +23,12 @@
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
 			//if num_connected would be >= max #, backlog the connect and refuse it
-			if (num_connected < MAX_CONNECTIONS){
-				waitingQueue[num_connected] = client_socket;
-				num_connected ++;
-				while(num_connected > 1){
+			if (num_Connected < MAX_CONNECTIONS){
+				waitingQueue[num_Connected] = client_socket;
+				num_Connected ++;
+				while(num_Connected > 1){
 					fork_subserver(waitingQueue[0], waitingQueue[1]);
-					num_Connected = moveClientsUp(waitingQueue, numConnected);
+					num_Connected = moveClientsUp(waitingQueue, num_Connected);
 				}
 			}
 		}
@@ -84,14 +72,6 @@
 		return 0;
 	}
 
-
-	// clearer substitute for calling signal(SIGNUM, sighandler)
-	// checks for SIGCHLD and SIGINT
-	void setup_sighandlers(){
-		signal(SIGINT, sighandler);
-		signal(SIGCHLD, sighandler);
-	}
-
 	// handles SIGCHLD and SIGINT
 	static void sighandler(int signo){
 		if(signo == SIGINT){
@@ -106,3 +86,10 @@
 		}
 	}
 	
+	// clearer substitute for calling signal(SIGNUM, sighandler)
+	// checks for SIGCHLD and SIGINT
+	void setup_sighandlers(){
+		signal(SIGINT, sighandler);
+		signal(SIGCHLD, sighandler);
+	}
+

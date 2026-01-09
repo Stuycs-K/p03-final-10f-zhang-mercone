@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 
 #ifndef NETWORKING_H
@@ -20,4 +21,6 @@ void err(int i, char*message);
 int server_setup();
 int client_connect(char* IP, char* port) ;
 int server_tcp_handshake(int listen_socket);
+int run_match(int fdA, int fdB);
+void sendResult(int fdA, int fdB, int Amove, int Bmove);
 #endif

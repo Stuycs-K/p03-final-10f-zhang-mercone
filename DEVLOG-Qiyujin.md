@@ -18,3 +18,5 @@ This document must be updated daily every time you finish a work session.
 - Added select to subserver logic. 
 - Fixed bugs in server code. 
 
+### 2026-01-09 - More Subserver logic
+- Now can successfully send opponent moves and scores to clients. 
