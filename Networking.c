@@ -141,8 +141,18 @@
 	}
 	
 	void sendResult(int fdA, int fdB, int Amove, int Bmove){
-		send(fdA, compare_move(Amove, Bmove), sizeof(int), 0); // if A wins, send 1; A loss, send -1; tie: 0
-		send(fdB, compare_move(Bmove, Amove), sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
+		int ABresult = compare_move(Amove, Bmove);
+		int BAresult = compare_move(Bmove, Amove)
+		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send -1; tie: 0
+		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
 	}
 	
-
+	void getUsername(int fd, char name[]){
+		name[63] = NULL;
+		int sendIdRequest = 011; // special int for getting id
+		send(fd, &sendIdRequest, sizeof(int), 0);
+		if(recv(fd, name, 64, 0) == 0){
+			printf("Lost connection\n");
+			exit(0);
+		}
+	}
