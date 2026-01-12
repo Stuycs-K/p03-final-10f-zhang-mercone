@@ -147,12 +147,49 @@
 		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
 	}
 	
-	void getUsername(int fd, char name[]){
-		name[63] = NULL;
+	int getUsername(int fd, char name[]){
 		int sendIdRequest = 011; // special int for getting id
 		send(fd, &sendIdRequest, sizeof(int), 0);
 		if(recv(fd, name, 64, 0) == 0){
-			printf("Lost connection\n");
-			exit(0);
+			return 0;
+		}
+		name[63] = '\0';
+		return 1;
+	}
+	
+	void sendUsernames(int fdA, int fdB){
+		int ANameReceived = -1;
+		int BNameReceived = -1;
+		char AName[64];
+		char BName[64];
+		
+		while(ANameReceived == -1 || BNameReceived == -1){
+			fd_set recv_fds;
+			FD_ZERO(&recv_fds);
+			FD_SET(fdA, &recv_fds);
+			FD_SET(fdB, &recv_fds);
+			int maxFD;
+			if(fdA > fdB){
+				maxFD = fdA;
+			}
+			else{
+				maxFD = fdB;
+			}
+			
+			int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+			if(FD_ISSET(fdA, &recv_fds)){
+				if(getUsername(fdA, AName) == 0){
+					printf("Lost connection\n");
+					exit(0);
+				}
+				ANameReceived == 0;
+			}
+			if(FD_ISSET(fdB, &recv_fds)){
+				if(getUsername(fdB, BName) == 0){
+					printf("Lost connection\n");
+					exit(0);
+				} 
+				BNameReceived == 0;
+			}
 		}
 	}
