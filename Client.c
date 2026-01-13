@@ -15,6 +15,17 @@
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
 
+void printMove(int move){
+	if(move == 0){
+		printf("rock\n");
+	}
+	if(move == 1){
+		printf("paper\n");
+	}
+	if(move == 2){
+		printf("scissors\n");
+	}
+}
 
 // Asks for user move and sends to server. Then waits for server response for the game.
 // Displays the result to user.
@@ -48,7 +59,7 @@ void client_logic(int server_socket){
 			if(sscanf (move, "%d", &moveint) != 1){
 				moveint = -1;
 			}
-			if(moveint >= 0 && <= 2){
+			if(moveint >= 0 && moveint<= 2){
 				break;
 			}
 			else{
@@ -57,6 +68,12 @@ void client_logic(int server_socket){
 		}
 		printf("moveint %d\n", moveint);
 		send(server_socket, &moveint, sizeof(int), 0);
+		
+		int opponentMove; 
+		recv(server_socket, &opponentMove, sizeof(int), 0);
+		printf("Opponent entered their move: "); printMove(opponentMove);
+		
+		
 	}
 		printf("Game ended.\n");
 		exit(0);
