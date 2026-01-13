@@ -28,22 +28,25 @@ void client_logic(int server_socket){
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
 		printf("Debugging02\n");
 		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-		if (bytes_received == -1){
+		if (bytes_received <= 0){
 			perror("Client exiting due to empty message...\n");
 			exit(0);
 		}
-		else {
-			int moveint = -1;
-			while (moveint < 0){ //while loop to ensure the sent value is greater than -1
-				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-				char move[16];
-				moveint = -1;
-				fgets (move, 16, stdin);
-				sscanf (move, "%d", &moveint);
-				printf("moveint %d\n", moveint);
+		int moveint = -1;
+		
+		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
+			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+			char move[16];
+			moveint = -1;
+			if(fgets (move, 16, stdin) == NULL){
+				perror("Input closed. ");
 			}
-			send(server_socket, &moveint, sizeof(int), 0);
+			if(sscanf (move, "%d", &moveint) != 1){
+				moveint = -1;
+			}
+			printf("moveint %d\n", moveint);
 		}
+		send(server_socket, &moveint, sizeof(int), 0);
 	}
 		printf("Game ended.\n");
 		exit(0);
@@ -51,8 +54,11 @@ void client_logic(int server_socket){
 	// a wrapper function that calls client_connect(char* IP, char* port)
 	// which returns connected socket descriptor.
 	int connect_to_server(char* IP){
-		client_connect(IP, PORT);
-		return 1;
+		int sockfd = client_connect(IP, PORT);
+		if (sockfd < 0){
+			perror("client_connect failed");
+		}
+		return sockfd;
 	}
 
 	// optionally takes IP address from user input

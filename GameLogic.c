@@ -36,14 +36,14 @@
 
 //this would be in the subserver ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //will take two scores + two moves, compare moves and add one to the correct score
-void scorehandler (int games_played, int a_score, int b_score, int a_move, int b_move){
+void scorehandler (int* games_played, int* a_score, int* b_score, int a_move, int b_move){
   if ( (compare_move (a_move, b_move)) == 1){
-    a_score++;
-    games_played++;
+    *a_score++;
+    *games_played++;
   }
   if ( (compare_move (a_move, b_move)) == 0){
-    b_score++;
-    games_played++;
+    *b_score++;
+    *games_played++;
   }
 }
 

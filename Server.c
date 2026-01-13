@@ -9,7 +9,7 @@
 		}
 		Queue[numClients-1] = -1;
 		Queue[numClients-2] = -1;
-		return clientsleft;
+		return clientsleft -2;
 	}
 
 	// creates a child process to run the match between clientA and clientB
@@ -18,11 +18,11 @@
 	void fork_subserver(int clientA_fd, int clientB_fd){
 		printf("added to forking loop");
 		int pid = fork();
-		if(pid == 0){ // parent
+		if(pid == 0){ // child
 			run_match(clientA_fd, clientB_fd);
 			exit(0);
 		}
-		else{ // child
+		else{ // parent
 			close(clientA_fd);
 			close(clientB_fd);
 			return;
@@ -46,7 +46,7 @@
 				printf("SERVER: Client-Server handshake successful.\n");
 			}
 			else {
-				printf("SERVER: %s\n",strerror(errno));
+				perror("server: handshake failed");
 			}
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
@@ -70,6 +70,7 @@
 	//Runs server_logic_loop
 	int main (){
 		//one time setup for a listening socket
+		setup_sighandlers();
 		int listen_socket = server_setup();
 		server_logic_loop(listen_socket);
 		close(listen_socket);
@@ -80,6 +81,7 @@
 	static void sighandler(int signo){
 		if(signo == SIGINT){
 			printf("Server closed. Hope you had fun! \n");
+			exit(0);
 		}
 		if(signo == SIGCHLD){
 			int status;

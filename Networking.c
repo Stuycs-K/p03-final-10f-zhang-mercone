@@ -133,7 +133,7 @@
 				break;
 			}
 			sendResult(fdA, fdB, AMove, BMove); // In server, after displaying opponent's move, receive 1, -1, or 0 (win, loss, tie) and display result. 
-			scorehandler(gamesPlayed, Ascore, Bscore, AMove, BMove); // Changes statistics of winning status. 
+			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status. 
 			
 			
 		}
