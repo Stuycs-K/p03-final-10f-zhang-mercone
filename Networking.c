@@ -94,6 +94,8 @@
 		int Ascore = 0;
 		int Bscore = 0;
 		while(stillWantGame == 1){
+			send(fdA, &gamesPlayed, sizeof(int), 0);
+			send(fdB, &gamesPlayed, sizeof(int), 0);
 			int AMove = -1;
 			int BMove = -1;
 			while (AMove == -1 || BMove == -1){

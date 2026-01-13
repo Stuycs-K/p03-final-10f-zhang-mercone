@@ -20,3 +20,6 @@ This document must be updated daily every time you finish a work session.
 
 ### 2026-01-09 - More Subserver logic
 - Now can successfully send opponent moves and scores to clients. 
+
+### 2026-01-13 - Compatability between client and server
+- Fixed the connection between client and server. 
