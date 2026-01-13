@@ -24,14 +24,14 @@
 
 void client_logic(int server_socket){
 	int gamesPlayed = 0;
-
+	printf("%d\n", server_socket);
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
+		printf("Debugging02\n");
 		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-		if (bytes_received < 0){
-			printf("Client exiting due to empty message...\n");
+		if (bytes_received == -1){
+			perror("Client exiting due to empty message...\n");
 			exit(0);
 		}
-
 		else {
 			int moveint = -1;
 			while (moveint < 0){ //while loop to ensure the sent value is greater than -1
@@ -42,7 +42,7 @@ void client_logic(int server_socket){
 				sscanf (move, "%d", &moveint);
 				printf("moveint %d\n", moveint);
 			}
-			send(server_socket, moveint, sizeof(int), 0);
+			send(server_socket, &moveint, sizeof(int), 0);
 		}
 	}
 		printf("Game ended.\n");

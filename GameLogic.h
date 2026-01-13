@@ -13,6 +13,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
-//function headers go here
+void scorehandler (int games_played, int a_score, int b_score, int a_move, int b_move);
+int compare_move(int a_move, int b_move);
 
 #endif

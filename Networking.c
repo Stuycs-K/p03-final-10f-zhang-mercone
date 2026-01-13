@@ -142,7 +142,7 @@
 	
 	void sendResult(int fdA, int fdB, int Amove, int Bmove){
 		int ABresult = compare_move(Amove, Bmove);
-		int BAresult = compare_move(Bmove, Amove)
+		int BAresult = compare_move(Bmove, Amove);
 		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send -1; tie: 0
 		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
 	}
@@ -182,14 +182,14 @@
 					printf("Lost connection\n");
 					exit(0);
 				}
-				ANameReceived == 0;
+				ANameReceived = 0;
 			}
 			if(FD_ISSET(fdB, &recv_fds)){
 				if(getUsername(fdB, BName) == 0){
 					printf("Lost connection\n");
 					exit(0);
 				} 
-				BNameReceived == 0;
+				BNameReceived = 0;
 			}
 		}
 	}

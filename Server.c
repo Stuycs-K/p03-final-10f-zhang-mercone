@@ -1,38 +1,5 @@
 #include "Networking.h"
 #include "GameLogic.h"
-
-
-	// accept clients using server_accept
-	// add clients to waiting queue
-	// when 2 clients available: call fork_subserver(clientA, clinetB)
-	// don't end unless ctrl-c
-	void server_logic_loop(int server_fd){
-		int num_Connected = 0;
-		int waitingQueue[MAX_CONNECTIONS];
-		for(int i = 0; i < MAX_CONNECTIONS; i ++){
-			waitingQueue[i] = -1;
-		}
-		while (1){
-			int client_socket = server_tcp_handshake(server_fd);
-			if (client_socket > -1){
-				printf ("SERVER: Client-Server handshake  successful.\n");
-			}
-			else {
-				printf("SERVER: %s\n",strerror(errno));
-			}
-			//if a client_server handshake is successful, up num_connected by 1
-			//put the client's descriptor into an array
-			//if num_connected would be >= max #, backlog the connect and refuse it
-			if (num_Connected < MAX_CONNECTIONS){
-				waitingQueue[num_Connected] = client_socket;
-				num_Connected ++;
-				while(num_Connected > 1){
-					fork_subserver(waitingQueue[0], waitingQueue[1]);
-					num_Connected = moveClientsUp(waitingQueue, num_Connected);
-				}
-			}
-		}
-	}
 	
 	// removes first 2 clients in the Queue. returns number of clients left in Queue;
 	int moveClientsUp(int Queue[], int numClients){
@@ -49,17 +16,54 @@
 	// Child: closes listening socket, call run_match(clientA_fd, clientB_fd). exit when match ends
 	// Parent: closes both client sockets. Return to logic loop.
 	void fork_subserver(int clientA_fd, int clientB_fd){
+		printf("added to forking loop");
 		int pid = fork();
-		if(pid != 0){ // parent
+		if(pid == 0){ // parent
+			run_match(clientA_fd, clientB_fd);
+			exit(0);
+		}
+		else{ // child
 			close(clientA_fd);
 			close(clientB_fd);
 			return;
 		}
-		else{ // child
-			run_match(clientA_fd, clientB_fd);
-			exit(0);
+	}
+	
+	// accept clients using server_accept
+	// add clients to waiting queue
+	// when 2 clients available: call fork_subserver(clientA, clinetB)
+	// don't end unless ctrl-c
+	void server_logic_loop(int server_fd){
+		int num_Connected = 0;
+		int waitingQueue[MAX_CONNECTIONS];
+		for(int i = 0; i < MAX_CONNECTIONS; i ++){
+			waitingQueue[i] = -1;
 		}
-
+		while (1){
+			printf("Waiting for clients\n");
+			int client_socket = server_tcp_handshake(server_fd);
+			if (client_socket > -1){
+				printf("SERVER: Client-Server handshake successful.\n");
+			}
+			else {
+				printf("SERVER: %s\n",strerror(errno));
+			}
+			//if a client_server handshake is successful, up num_connected by 1
+			//put the client's descriptor into an array
+			//if num_connected would be >= max #, backlog the connect and refuse it
+			printf("%d\n", num_Connected);
+			printf("%d\n", MAX_CONNECTIONS);
+			if (num_Connected < MAX_CONNECTIONS){
+				printf("more debugg\n");
+				waitingQueue[num_Connected] = client_socket;
+				num_Connected ++;
+				printf("added to waiting queue\n");
+				while(num_Connected > 1){
+					fork_subserver(waitingQueue[0], waitingQueue[1]);
+					num_Connected = moveClientsUp(waitingQueue, num_Connected);
+				}
+			}
+		}
 	}
 
 	//Main server logic
