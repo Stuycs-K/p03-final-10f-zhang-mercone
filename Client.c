@@ -33,7 +33,7 @@ void client_logic(int server_socket){
 			exit(0);
 		}
 		int moveint = -1;
-		
+
 		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
 			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
 			char move[16];
