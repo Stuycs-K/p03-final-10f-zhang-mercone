@@ -44,7 +44,7 @@
 		int client_socket;
 		
 		//accept() the client connection
-		int sock_size;
+		socklen_t sock_size;
 		struct sockaddr_storage client_address;
 		sock_size = sizeof(client_address);
 		client_socket = accept(listen_socket, (struct sockaddr *)&client_address, &sock_size);

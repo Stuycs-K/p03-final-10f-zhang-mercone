@@ -23,15 +23,19 @@
 // Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
 void client_logic(int server_socket){
+	
+	printf("Match made! Your opponent is... (this is for later))\n");
 	int gamesPlayed = 0;
 	printf("%d\n", server_socket);
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		printf("Debugging02\n");
 		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 		if (bytes_received <= 0){
 			perror("Client exiting due to empty message...\n");
 			exit(0);
 		}
+		printf("You have played %d games with this opponent\n", gamesPlayed);
+		
+		
 		int moveint = -1;
 		
 		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
@@ -44,8 +48,14 @@ void client_logic(int server_socket){
 			if(sscanf (move, "%d", &moveint) != 1){
 				moveint = -1;
 			}
-			printf("moveint %d\n", moveint);
+			if(moveint >= 0 && <= 2){
+				break;
+			}
+			else{
+				printf("Invalid input! Please enter again.\n");
+			}
 		}
+		printf("moveint %d\n", moveint);
 		send(server_socket, &moveint, sizeof(int), 0);
 	}
 		printf("Game ended.\n");
@@ -70,6 +80,8 @@ void client_logic(int server_socket){
 		if (argc > 1){
 			strcpy(IP, argv[1]);
 		}
+		printf("This is a Rock Paper Scissors Game Server. Welcome!\n");
+		printf("Please enter the name you wish to be called(for later! Ignore for now)\n");
 
 		int server_socket = connect_to_server(IP);
 		client_logic(server_socket);
