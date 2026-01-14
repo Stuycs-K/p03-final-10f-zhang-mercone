@@ -70,7 +70,6 @@ void client_logic(int server_socket){
 		
 		printf("Match made! Your opponent is... (this is for later))\n");
 		int gamesPlayed = 0;
-		printf("%d\n", server_socket);
 		
 		while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
@@ -93,13 +92,12 @@ void client_logic(int server_socket){
 				if(sscanf(move, "%d", &moveint) != 1){
 					moveint = -1;
 				}
-				printf("moveint %d\n", moveint);
 				if(moveint >= 0 && moveint<= 2){
+					printf("Your move: "); printMove(moveint);
 					break;
 				}
 				printf("Invalid input! Please enter again.\n");
 			}
-			printf("moveint %d\n", moveint);
 			
 			//Send move to server
 			send(server_socket, &moveint, sizeof(int), 0);

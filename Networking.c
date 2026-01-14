@@ -111,7 +111,7 @@
 					maxFD = fdB;
 				}
 
-				int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+				select(maxFD+1, &recv_fds, NULL, NULL, NULL);
 				if(FD_ISSET(fdA, &recv_fds)){
 					if(recv(fdA, &AMove, sizeof(int), 0) == 0){
 						stillWantGame = 0;
@@ -178,7 +178,7 @@
 				maxFD = fdB;
 			}
 
-			int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+			select(maxFD+1, &recv_fds, NULL, NULL, NULL);
 			if(FD_ISSET(fdA, &recv_fds)){
 				if(getUsername(fdA, AName) == 0){
 					printf("Lost connection\n");
