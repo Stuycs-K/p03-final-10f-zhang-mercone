@@ -26,7 +26,6 @@ void client_logic(int server_socket){
 	int gamesPlayed = 0;
 	printf("%d\n", server_socket);
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		if (ClientServerPing == 0){
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
 				perror("Client exiting due to empty message...\n");
@@ -48,10 +47,7 @@ void client_logic(int server_socket){
 			}
 			send(server_socket, &moveint, sizeof(int), 0);
 		}
-		else {
-		exit(0);	
-		}
-	}
+	
 	printf("Game ended.\n");
 	exit(0);
 }
