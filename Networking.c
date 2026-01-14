@@ -145,8 +145,8 @@
 	void sendResult(int fdA, int fdB, int Amove, int Bmove){
 		int ABresult = compare_move(Amove, Bmove);
 		int BAresult = compare_move(Bmove, Amove);
-		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send -1; tie: 0
-		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
+		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send 0; tie: -1
+		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send 0; tie: -1
 	}
 
 	int getUsername(int fd, char name[]){

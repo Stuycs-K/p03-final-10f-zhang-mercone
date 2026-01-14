@@ -23,3 +23,6 @@ This document must be updated daily every time you finish a work session.
 
 ### 2026-01-13 - Compatability between client and server
 - Fixed the connection between client and server. 
+
+### 2026-01-14 - Communication between client and server
+- Made sure each thing sent from client is received by server, and vice versa. 

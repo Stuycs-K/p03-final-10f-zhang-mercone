@@ -28,6 +28,18 @@ void printMove(int move){
 	}
 }
 
+void printResult(int result){
+	if(result == -1){
+		printf("There's a tie!\n");
+	}
+	if(result == 1){
+		printf("You win! \n");
+	}
+	if(result == 0){
+		printf("You lost. \n");
+	}
+}
+
 // Asks for user move and sends to server. Then waits for server response for the game.
 // Displays the result to user.
 // Later: can have the option to ask for username, send to server, and get opponent's username and display etc.
@@ -96,6 +108,10 @@ void client_logic(int server_socket){
 			int opponentMove; 
 			recv(server_socket, &opponentMove, sizeof(int), 0);
 			printf("Opponent entered their move: "); printMove(opponentMove);
+			
+			int result;
+			recv(server_socket, &result, sizeof(int), 0);
+			printResult(result);
 		}
 		printf("Game ended.\n");
 		exit(0);
