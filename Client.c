@@ -12,6 +12,7 @@
 
 #include "Networking.h"
 #include "GameLogic.h"
+
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
 
@@ -24,34 +25,48 @@
 
 void client_logic(int server_socket){
 	int gamesPlayed = 0;
-	printf("%d\n", server_socket);
-	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		if (ClientServerPing == 0){
-			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-			if (bytes_received <= 0){
-				perror("Client exiting due to empty message...\n");
-				exit(0);
-			}
-			int moveint = -1;
+	int server_stat;
+	printf("Server socket: %d\n", server_socket);
 
-			while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
-				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-				char move[16];
-				moveint = -1;
-				if(fgets (move, 16, stdin) == NULL){
-					perror("Input closed. ");
-				}
-				if(sscanf (move, "%d", &moveint) != 1){
-					moveint = -1;
-				}
-				printf("moveint %d\n", moveint);
+	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
+		server_stat = ping(server_socket);
+		printf("Server status: %d\n Games played: %d\n", server_stat, gamesPlayed);
+
+		//PING CODE - CURRENTLY NOT IMPLEMENTED
+		// if (server_stat <= 0) {
+		//     printf("Server disconnected\n");
+		// 		exit(0);
+		// }
+		// else {
+		//struct timeval tv = {5, 0}; // 5 second timeout
+		//setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+
+		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
+		if (bytes_received <= 0){
+			perror("Client exiting due to empty message...");
+			exit(0);
+		}
+		//set move tracker
+		int moveint = -1;
+
+		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
+			printf ("Enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+			char move[16];
+			moveint = -1;
+			if(fgets (move, 16, stdin) == NULL){
+				perror("Input closed. ");
 			}
-			send(server_socket, &moveint, sizeof(int), 0);
+			if(sscanf (move, "%d", &moveint) != 1){
+				moveint = -1;
+			}
+			if (moveint < 0 || moveint > 2){
+				printf("Your move was not one of the choices. Please try again.\n");
+			}
 		}
-		else {
-		exit(0);	
-		}
+		printf("Your move was: %d\n", moveint);
+		send(server_socket, &moveint, sizeof(int), 0);
 	}
+	// }
 	printf("Game ended.\n");
 	exit(0);
 }
