@@ -44,7 +44,7 @@
 		int client_socket;
 
 		//accept() the client connection
-		int sock_size;
+		socklen_t sock_size;
 		struct sockaddr_storage client_address;
 		sock_size = sizeof(client_address);
 		client_socket = accept(listen_socket, (struct sockaddr *)&client_address, &sock_size);
@@ -138,8 +138,7 @@
 			printf("Networking's gamesplayed (0-2): %d\n", gamesPlayed);
 			printf("Still want game?: %d\n", stillWantGame);
 			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
-
-
+			printf("Networking's gamesplayed (0-2) post scorehandler: %d\n", gamesPlayed);
 		}
 		return(stillWantGame);
 	}

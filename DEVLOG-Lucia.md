@@ -35,4 +35,5 @@ This document must be updated daily every time you finish a work session.
   - Gamesplayed (the variable set to keep track of 'rounds' of completed games, not including ties) somehow decreases/changes randomly, which may trigger or otherwise contribute to the previous issue.
 
 ### 2026-01-14
--
+- Debugging continues:
+  - GamesPlayed variation is caused due to the client actually recieving moveint (the move of the opposite client) and subbing it into gamesPlayed.

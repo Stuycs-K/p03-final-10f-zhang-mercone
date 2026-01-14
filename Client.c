@@ -64,6 +64,7 @@ void client_logic(int server_socket){
 				printf("Your move was not one of the choices. Please try again.\n");
 			}
 		}
+		//debug moveint = 16;
 		printf("Your move was: %d\n", moveint);
 		send(server_socket, &moveint, sizeof(int), 0);
 	}
