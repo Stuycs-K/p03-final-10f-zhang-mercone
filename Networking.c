@@ -138,7 +138,10 @@
 			printf("Networking's gamesplayed (0-2): %d\n", gamesPlayed);
 			printf("Still want game?: %d\n", stillWantGame);
 			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
+<<<<<<< HEAD
 			printf("Networking's gamesplayed (0-2) post scorehandler: %d\n", gamesPlayed);
+=======
+>>>>>>> main
 		}
 		return(stillWantGame);
 	}
@@ -146,8 +149,8 @@
 	void sendResult(int fdA, int fdB, int Amove, int Bmove){
 		int ABresult = compare_move(Amove, Bmove);
 		int BAresult = compare_move(Bmove, Amove);
-		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send -1; tie: 0
-		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send -1; tie: 0
+		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send 0; tie: -1
+		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send 0; tie: -1
 	}
 
 	int getUsername(int fd, char name[]){

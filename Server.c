@@ -10,9 +10,10 @@
 		}
 		if(signo == SIGCHLD){
 			int status;
-			wait(&status);
-			if(!WIFEXITED(status)){
-				printf("Child exited due to abnormally.\n");
+			while(waitpid(-1, &status, WNOHANG)>0){
+				if(!WIFEXITED(status)){
+					printf("Child exited due to abnormally.\n");
+				}
 			}
 		}
 	}
@@ -45,6 +46,8 @@
 		if(pid == 0){ // child
 			printf("I am a forked server-child....\n");
 			run_match(clientA_fd, clientB_fd);
+			close(clientA_fd);
+			close(clientB_fd);
 			exit(0);
 		}
 		else{ // parent
@@ -68,12 +71,11 @@
 		while (1){
 			printf("Waiting for clients\n");
 			int client_socket = server_tcp_handshake(server_fd);
-			if (client_socket > -1){
-				printf("SERVER: Client-Server handshake successful.\n");
+			if (client_socket < 0){
+				perror("SERVER: Client-Server handshake failed.\n");
+				continue;
 			}
-			else {
-				perror("SERVER: handshake failed");
-			}
+			printf("SERVER: Client-Server handshake successful.\n");
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
 			//if num_connected would be >= max #, backlog the connect and refuse it
