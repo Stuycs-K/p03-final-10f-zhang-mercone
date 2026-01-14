@@ -25,4 +25,6 @@ int run_match(int fdA, int fdB);
 void sendResult(int fdA, int fdB, int Amove, int Bmove);
 int getUsername(int fd, char name[]);
 void sendUsernames(int fdA, int fdB);
+
+int ping (int server_socket);
 #endif
