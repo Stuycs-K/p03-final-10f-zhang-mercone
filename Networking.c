@@ -135,7 +135,7 @@
 				break;
 			}
 			sendResult(fdA, fdB, AMove, BMove); // In server, after displaying opponent's move, receive 1, -1, or 0 (win, loss, tie) and display result.
-			printf("Networking's gamesplayed: %d\n", gamesPlayed);
+			printf("Networking's gamesplayed (0-2): %d\n", gamesPlayed);
 			printf("Still want game?: %d\n", stillWantGame);
 			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
 
@@ -205,7 +205,7 @@ int ping (int server_socket){
 			 printf("Socket status: %d\n", socket_status);
 			 if (socket_status < 0){ //it error
 				 if (errno == EAGAIN || errno == EWOULDBLOCK){
-					 printf("errno hit EAGAIN/EWOULDBLOCK! \n");
+					 printf("errno hit EAGAIN/EWOULDBLOCK! \n"); //ignore it since it means no prev data, not dead server
 					 return 1;
 				 }
 				 else {

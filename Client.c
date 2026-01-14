@@ -29,8 +29,8 @@ void client_logic(int server_socket){
 	printf("Server socket: %d\n", server_socket);
 
 	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		server_stat = ping(server_socket);
-		printf("Server status: %d\n Games played: %d\n", server_stat, gamesPlayed);
+		//server_stat = ping(server_socket);
+		printf("Server status: DUMMIED\n Games played (pre recv): %d\n", gamesPlayed);
 
 		//PING CODE - CURRENTLY NOT IMPLEMENTED
 		// if (server_stat <= 0) {
@@ -47,6 +47,7 @@ void client_logic(int server_socket){
 			exit(0);
 		}
 		//set move tracker
+		printf("Client's games played recieved: %d\n", gamesPlayed);
 		int moveint = -1;
 
 		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
