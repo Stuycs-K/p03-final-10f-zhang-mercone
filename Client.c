@@ -33,51 +33,53 @@ void printMove(int move){
 // Later 2: after each match ask if the users want another game. Redo if both replied yes.
 // Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
-void client_logic(int server_socket){
-	
-	printf("Match made! Your opponent is... (this is for later))\n");
-	int gamesPlayed = 0;
-	printf("%d\n", server_socket);
-	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-		if (bytes_received <= 0){
-			perror("Client exiting due to empty message...\n");
-			exit(0);
-		}
-		printf("You have played %d games with this opponent\n", gamesPlayed);
+	void client_logic(int server_socket){
 		
+		printf("Match made! Your opponent is... (this is for later))\n");
+		int gamesPlayed = 0;
+		printf("%d\n", server_socket);
 		
-		int moveint = -1;
-		
-		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
-			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-			char move[16];
-			moveint = -1;
-			if(fgets (move, 16, stdin) == NULL){
-				perror("Input closed. ");
+		while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
+			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
+			if (bytes_received <= 0){
+				perror("Client exiting due to empty message...\n");
+				exit(0);
 			}
-			if(sscanf (move, "%d", &moveint) != 1){
+			printf("You have played %d games with this opponent\n", gamesPlayed);
+			
+			int moveint = -1;
+			
+			while (1){ //while loop to ensure the sent value is greater than -1
+				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+				char move[16];
 				moveint = -1;
-			}
-			if(moveint >= 0 && moveint<= 2){
-				break;
-			}
-			else{
+				if(fgets (move, 16, stdin) == NULL){
+					perror("Input closed. ");
+					exit(0);
+				}
+				if(sscanf(move, "%d", &moveint) != 1){
+					moveint = -1;
+				}
+				printf("moveint %d\n", moveint);
+				if(moveint >= 0 && moveint<= 2){
+					break;
+				}
 				printf("Invalid input! Please enter again.\n");
 			}
+			printf("moveint %d\n", moveint);
+			
+			//Send move to server
+			send(server_socket, &moveint, sizeof(int), 0);
+			
+			//Receive opponent move
+			int opponentMove; 
+			recv(server_socket, &opponentMove, sizeof(int), 0);
+			printf("Opponent entered their move: "); printMove(opponentMove);
 		}
-		printf("moveint %d\n", moveint);
-		send(server_socket, &moveint, sizeof(int), 0);
-		
-		int opponentMove; 
-		recv(server_socket, &opponentMove, sizeof(int), 0);
-		printf("Opponent entered their move: "); printMove(opponentMove);
-		
-		
-	}
 		printf("Game ended.\n");
 		exit(0);
-}
+	}
+	
 	// a wrapper function that calls client_connect(char* IP, char* port)
 	// which returns connected socket descriptor.
 	int connect_to_server(char* IP){
@@ -88,6 +90,7 @@ void client_logic(int server_socket){
 		return sockfd;
 	}
 
+		
 	// optionally takes IP address from user input
 	// connects to the server (call connect_to_server)
 	// runs the client loop (call client_logic())
@@ -97,9 +100,6 @@ void client_logic(int server_socket){
 		if (argc > 1){
 			strcpy(IP, argv[1]);
 		}
-		printf("This is a Rock Paper Scissors Game Server. Welcome!\n");
-		printf("Please enter the name you wish to be called(for later! Ignore for now)\n");
-
 		int server_socket = connect_to_server(IP);
 		client_logic(server_socket);
 

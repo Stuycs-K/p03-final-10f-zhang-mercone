@@ -1,6 +1,30 @@
 #include "Networking.h"
 #include "GameLogic.h"
-	
+
+
+	// handles SIGCHLD and SIGINT
+	static void sighandler(int signo){
+		if(signo == SIGINT){
+			printf("Server closed. Hope you had fun! \n");
+			exit(0);
+		}
+		if(signo == SIGCHLD){
+			int status;
+			wait(&status);
+			if(!WIFEXITED(status)){
+				printf("Child exited due to abnormally.\n");
+			}
+		}
+	}
+
+	// clearer substitute for calling signal(SIGNUM, sighandler)
+	// checks for SIGCHLD and SIGINT
+	void setup_sighandlers(){
+		signal(SIGINT, sighandler);
+		signal(SIGCHLD, sighandler);
+	}
+
+
 	// removes first 2 clients in the Queue. returns number of clients left in Queue;
 	int moveClientsUp(int Queue[], int numClients){
 		int clientsleft = numClients;
@@ -16,19 +40,21 @@
 	// Child: closes listening socket, call run_match(clientA_fd, clientB_fd). exit when match ends
 	// Parent: closes both client sockets. Return to logic loop.
 	void fork_subserver(int clientA_fd, int clientB_fd){
-		printf("added to forking loop");
+		printf("Running fork_subserver...\n");
 		int pid = fork();
 		if(pid == 0){ // child
+			printf("I am a forked server-child....\n");
 			run_match(clientA_fd, clientB_fd);
 			exit(0);
 		}
 		else{ // parent
+			printf("I am parent - disregard second one this is expected behavior.\n");
 			close(clientA_fd);
 			close(clientB_fd);
 			return;
 		}
 	}
-	
+
 	// accept clients using server_accept
 	// add clients to waiting queue
 	// when 2 clients available: call fork_subserver(clientA, clinetB)
@@ -46,7 +72,7 @@
 				printf("SERVER: Client-Server handshake successful.\n");
 			}
 			else {
-				perror("server: handshake failed");
+				perror("SERVER: handshake failed");
 			}
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
@@ -54,10 +80,10 @@
 			printf("%d\n", num_Connected);
 			printf("%d\n", MAX_CONNECTIONS);
 			if (num_Connected < MAX_CONNECTIONS){
-				printf("more debugg\n");
+				printf("Number of connections is acceptable. Proceeding.\n");
 				waitingQueue[num_Connected] = client_socket;
 				num_Connected ++;
-				printf("added to waiting queue\n");
+				printf("Current number of connections: %d\nAdded to waiting queue.\n", num_Connected);
 				while(num_Connected > 1){
 					fork_subserver(waitingQueue[0], waitingQueue[1]);
 					num_Connected = moveClientsUp(waitingQueue, num_Connected);
@@ -76,26 +102,3 @@
 		close(listen_socket);
 		return 0;
 	}
-
-	// handles SIGCHLD and SIGINT
-	static void sighandler(int signo){
-		if(signo == SIGINT){
-			printf("Server closed. Hope you had fun! \n");
-			exit(0);
-		}
-		if(signo == SIGCHLD){
-			int status;
-			wait(&status);
-			if(!WIFEXITED(status)){
-				printf("Child exited due to abnormally.\n");
-			}
-		}
-	}
-	
-	// clearer substitute for calling signal(SIGNUM, sighandler)
-	// checks for SIGCHLD and SIGINT
-	void setup_sighandlers(){
-		signal(SIGINT, sighandler);
-		signal(SIGCHLD, sighandler);
-	}
-
