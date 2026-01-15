@@ -153,7 +153,7 @@
 
 	int getUsername(int fd, char name[]){
 		int sendIdRequest = 011; // special int for getting id
-		send(fd, &sendIdRequest, sizeof(int), 0);
+		//send(fd, &sendIdRequest, sizeof(int), 0);
 		if(recv(fd, name, 64, 0) == 0){
 			return 0;
 		}
@@ -198,8 +198,8 @@
 			}
 		}
 		//debug
-		//send(fdA, &BName, 64, 0);
-		//send(fdB, &AName, 64, 0);
+		send(fdA, &BName, 64, 0);
+		send(fdB, &AName, 64, 0);
 		printf ("Aname %s Bname %s", AName, BName);
 	}
 

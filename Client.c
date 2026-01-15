@@ -113,20 +113,22 @@ void client_logic(int server_socket){
 			if (usernameBool == 1){
 				strncpy(username, "Anonymous", 64);
 			}
-			send(server_socket, &username, 64, 0);
+				int id;
+				//recv(server_socket, &id, sizeof(int), 0);
+				//printf("id %d", id);
+				send(server_socket, &username, 64, 0);
+
 		}
 		else {
 			usernameBool = -1;
 		}
-
 	}
 
 
 	printf("Please wait while we match you to an opponent.\n");
-int bittern = recv(server_socket, &opponentName, 64, 0);
-printf("bittern %d", bittern);
 
-	if (bittern <= 0){
+
+	if (recv(server_socket, &opponentName, 64, 0) <= 0){
 		perror("Error. Client not connected to server.\n");
 		exit(0);
 	}
