@@ -138,7 +138,7 @@
 			printf("Networking's gamesplayed (0-2): %d\n", gamesPlayed);
 			printf("Still want game?: %d\n", stillWantGame);
 			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
-			printf("Networking's gamesplayed (0-2) post scorehandler: %d\n", gamesPlayed);
+			sendScore(fdA, fdB, Ascore, Bscore);
 		}
 		return(stillWantGame);
 	}
@@ -148,6 +148,13 @@
 		int BAresult = compare_move(Bmove, Amove);
 		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send 0; tie: -1
 		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send 0; tie: -1
+	}
+
+	void sendScore(int fdA, int fdB, int Ascore, int Bscore){
+		send(fdA, &Ascore, sizeof(int), 0);
+		send(fdA, &Bscore, sizeof(int), 0);
+		send(fdB, &Bscore, sizeof(int), 0);
+		send(fdB, &Ascore, sizeof(int), 0);
 	}
 
 

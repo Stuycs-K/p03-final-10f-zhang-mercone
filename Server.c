@@ -5,7 +5,7 @@
 	// handles SIGCHLD and SIGINT
 	static void sighandler(int signo){
 		if(signo == SIGINT){
-			printf("Server closed. Hope you had fun! \n");
+			printf("\nServer closed. Hope you had fun! \n");
 			exit(0);
 		}
 		if(signo == SIGCHLD){
@@ -44,14 +44,12 @@
 		printf("Running fork_subserver...\n");
 		int pid = fork();
 		if(pid == 0){ // child
-			printf("I am a forked server-child....\n");
 			run_match(clientA_fd, clientB_fd);
 			close(clientA_fd);
 			close(clientB_fd);
 			exit(0);
 		}
 		else{ // parent
-			printf("I am parent - disregard second one this is expected behavior.\n");
 			close(clientA_fd);
 			close(clientB_fd);
 			return;
@@ -79,8 +77,6 @@
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
 			//if num_connected would be >= max #, backlog the connect and refuse it
-			printf("%d\n", num_Connected);
-			printf("%d\n", MAX_CONNECTIONS);
 			if (num_Connected < MAX_CONNECTIONS){
 				printf("Number of connections is acceptable. Proceeding.\n");
 				waitingQueue[num_Connected] = client_socket;
