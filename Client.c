@@ -13,8 +13,15 @@
 #include "Networking.h"
 #include "GameLogic.h"
 
+int moveAllowed = 0;
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
+void flush_stdin(){
+	int ch = getchar();
+	while(ch != '\n' && ch != EOF){
+		ch = getchar();
+	}
+}
 
 void printMove(int move){
 	if(move == 0){
@@ -70,9 +77,8 @@ void client_logic(int server_socket){
 		
 		printf("Match made! Your opponent is... (this is for later))\n");
 		int gamesPlayed = 0;
-		printf("%d\n", server_socket);
 		
-		while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
+		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
 				perror("Client exiting due to empty message...\n");
@@ -80,38 +86,57 @@ void client_logic(int server_socket){
 			}
 			printf("You have played %d games with this opponent\n", gamesPlayed);
 			
+			moveAllowed = 1;
 			int moveint = -1;
-			
-			while (1){ //while loop to ensure the sent value is greater than -1
-				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-				char move[16];
-				moveint = -1;
-				if(fgets (move, 16, stdin) == NULL){
-					perror("Input closed. ");
-					exit(0);
+			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+			while (1) {
+				fd_set read_fds;
+				FD_ZERO(&read_fds);
+
+				FD_SET(STDIN_FILENO, &read_fds);
+				FD_SET(server_socket, &read_fds);
+
+				int maxfd = server_socket + 1;
+				select(maxfd, &read_fds, NULL, NULL, NULL);
+
+				if (FD_ISSET(STDIN_FILENO, &read_fds)) {
+					if (!moveAllowed) {
+						printf("Too early! Wait for your turn.\n");
+						flush_stdin();
+						continue;
+					}
+
+					char buf[32];
+					fgets(buf, sizeof(buf), stdin);
+
+					if (sscanf(buf, "%d", &moveint) == 1 &&
+						moveint >= 0 && moveint <= 2) {
+
+						printf("Your move: ");
+						printMove(moveint);
+
+						moveAllowed = 0;
+						send(server_socket, &moveint, sizeof(int), 0);
+					}
+					else{
+						printf("Invalid input! Please enter again.\n");
+					}
 				}
-				if(sscanf(move, "%d", &moveint) != 1){
-					moveint = -1;
-				}
-				printf("moveint %d\n", moveint);
-				if(moveint >= 0 && moveint<= 2){
+
+				if (FD_ISSET(server_socket, &read_fds)) {
 					break;
 				}
-				printf("Invalid input! Please enter again.\n");
 			}
-			printf("moveint %d\n", moveint);
-			
-			//Send move to server
-			send(server_socket, &moveint, sizeof(int), 0);
 			
 			//Receive opponent move
 			int opponentMove; 
 			recv(server_socket, &opponentMove, sizeof(int), 0);
-			printf("Opponent entered their move: "); printMove(opponentMove);
-			
+			printf("Opponent move: "); printMove(opponentMove);
 			int result;
+			sleep(1);
 			recv(server_socket, &result, sizeof(int), 0);
 			printResult(result);
+			sleep(1);
 		}
 		printf("Game ended.\n");
 		exit(0);
