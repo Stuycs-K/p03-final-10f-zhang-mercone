@@ -28,3 +28,4 @@ This document must be updated daily every time you finish a work session.
 - Made sure each thing sent from client is received by server, and vice versa. 
 - Now, if user types input before the opponent enters their move, the client will recognize that and tell user to stop. 
 This was done by using select on stdin and on server_fd. 
+- Displayed scores in client during the game
