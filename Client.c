@@ -85,44 +85,44 @@ perror("Input closed. ");
 */
 void client_logic(int server_socket){
 	int gamesPlayed = 0;
-	char opponentName[64]; //grab opponent username
-	char username[64];
-	char userbool[8];
-	printf("DEBUG: Server Socket %d\n", server_socket);
-
-	int usernameBool = -1;
-	while (usernameBool == -1){
-		printf("Would you like to enter a username?\n 0. Yes\n1. No\n");
-		if(fgets (userbool, 8, stdin) == NULL){
-			perror("Pain.");
-			exit(0);
-		}
-
-		if(sscanf(userbool, "%d", &usernameBool) != 1){
-			usernameBool = -1;
-		}
-
-		if (usernameBool == 0 || usernameBool == 1){
-			if (usernameBool == 0){
-				printf("Enter your username below:\n");
-				if(fgets (username, 64, stdin) == NULL){
-					perror("Your username was too powerful. Bye.");
-					exit(0);
-				}
-			}
-			if (usernameBool == 1){
-				strncpy(username, "Anonymous", 64);
-			}
-				//int id;
-				//recv(server_socket, &id, sizeof(int), 0);
-				//printf("id %d", id);
-				//send(server_socket, &username, 64, 0);
-
-		}
-		else {
-			usernameBool = -1;
-		}
-	}
+	// char opponentName[64]; //grab opponent username
+	// char username[64];
+	// char userbool[8];
+	// printf("DEBUG: Server Socket %d\n", server_socket);
+	//
+	// int usernameBool = -1;
+	// while (usernameBool == -1){
+	// 	printf("Would you like to enter a username?\n 0. Yes\n1. No\n");
+	// 	if(fgets (userbool, 8, stdin) == NULL){
+	// 		perror("Pain.");
+	// 		exit(0);
+	// 	}
+	//
+	// 	if(sscanf(userbool, "%d", &usernameBool) != 1){
+	// 		usernameBool = -1;
+	// 	}
+	//
+	// 	if (usernameBool == 0 || usernameBool == 1){
+	// 		if (usernameBool == 0){
+	// 			printf("Enter your username below:\n");
+	// 			if(fgets (username, 64, stdin) == NULL){
+	// 				perror("Your username was too powerful. Bye.");
+	// 				exit(0);
+	// 			}
+	// 		}
+	// 		if (usernameBool == 1){
+	// 			strncpy(username, "Anonymous", 64);
+	// 		}
+	// 			//int id;
+	// 			//recv(server_socket, &id, sizeof(int), 0);
+	// 			//printf("id %d", id);
+	// 			//send(server_socket, &username, 64, 0);
+	//
+	// 	}
+	// 	else {
+	// 		usernameBool = -1;
+	// 	}
+	// }
 
 
 	printf("Please wait while we match you to an opponent.\n");
@@ -133,7 +133,7 @@ void client_logic(int server_socket){
 	// 	exit(0);
 	// }
 
-	printf("Match made! Your opponent is...%s!\n", opponentName);
+	printf("Match made! Your opponent is...\n");//, opponentName);
 
 	while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
