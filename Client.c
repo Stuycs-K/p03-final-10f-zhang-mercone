@@ -77,6 +77,8 @@ void client_logic(int server_socket){
 		
 		printf("Match made! Your opponent is... (this is for later))\n");
 		int gamesPlayed = 0;
+		int myScore = 0;
+		int opponentScore = 0;
 		
 		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
@@ -85,7 +87,7 @@ void client_logic(int server_socket){
 				exit(0);
 			}
 			printf("You have played %d games with this opponent\n", gamesPlayed);
-			
+			printf("The score is %d to %d\n", myScore, opponentScore);
 			moveAllowed = 1;
 			int moveint = -1;
 			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
@@ -136,8 +138,12 @@ void client_logic(int server_socket){
 			sleep(1);
 			recv(server_socket, &result, sizeof(int), 0);
 			printResult(result);
+			recv(server_socket, &myScore, sizeof(int), 0);
+			recv(server_socket, &opponentScore, sizeof(int), 0);
 			sleep(1);
+			
 		}
+		printf("The score is %d to %d\n", myScore, opponentScore);
 		printf("Game ended.\n");
 		exit(0);
 	}

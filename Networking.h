@@ -23,6 +23,7 @@ int client_connect(char* IP, char* port) ;
 int server_tcp_handshake(int listen_socket);
 int run_match(int fdA, int fdB);
 void sendResult(int fdA, int fdB, int Amove, int Bmove);
+void sendScore(int fdA, int fdB, int Ascore, int Bscore);
 int getUsername(int fd, char name[]);
 void sendUsernames(int fdA, int fdB);
 
