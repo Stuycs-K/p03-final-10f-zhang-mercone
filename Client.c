@@ -18,13 +18,13 @@
 
 void printMove(int move){
 	if(move == 0){
-		printf("rock\n");
+		printf("ROCK\n");
 	}
 	if(move == 1){
-		printf("paper\n");
+		printf("PAPER\n");
 	}
 	if(move == 2){
-		printf("scissors\n");
+		printf("SCISSORS\n");
 	}
 }
 
@@ -33,7 +33,7 @@ void printResult(int result){
 		printf("There's a tie!\n");
 	}
 	if(result == 1){
-		printf("You win! \n");
+		printf("You won! \n");
 	}
 	if(result == 0){
 		printf("You lost. \n");
@@ -48,122 +48,165 @@ void printResult(int result){
 
 /*
 void client_logic(int server_socket){
-	int gamesPlayed = 0;
-	int server_stat;
-	printf("Server socket: %d\n", server_socket);
+int gamesPlayed = 0;
+int server_stat;
+printf("Server socket: %d\n", server_socket);
 
-	while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-		//server_stat = ping(server_socket);
-		printf("Server status: DUMMIED\n Games played (pre recv): %d\n", gamesPlayed);
+while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
+//server_stat = ping(server_socket);
+printf("Server status: DUMMIED\n Games played (pre recv): %d\n", gamesPlayed);
 
-		//PING CODE - CURRENTLY NOT IMPLEMENTED
-		// if (server_stat <= 0) {
-		//     printf("Server disconnected\n");
-		// 		exit(0);
-		// }
-		// else {
-		//struct timeval tv = {5, 0}; // 5 second timeout
-		//setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+//PING CODE - CURRENTLY NOT IMPLEMENTED
+// if (server_stat <= 0) {
+//     printf("Server disconnected\n");
+// 		exit(0);
+// }
+// else {
+//struct timeval tv = {5, 0}; // 5 second timeout
+//setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
 <<<<<<< HEAD
-		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-		if (bytes_received <= 0){
-			perror("Client exiting due to empty message...");
+int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
+if (bytes_received <= 0){
+perror("Client exiting due to empty message...");
+exit(0);
+}
+//set move tracker
+printf("Client's games played recieved: %d\n", gamesPlayed);
+int moveint = -1;
+
+while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
+printf ("Enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+char move[16];
+moveint = -1;
+if(fgets (move, 16, stdin) == NULL){
+perror("Input closed. ");
+=======
+*/
+void client_logic(int server_socket){
+	int gamesPlayed = 0;
+	char opponentName[64]; //grab opponent username
+	char username[64];
+	char userbool[8];
+	printf("DEBUG: Server Socket %d\n", server_socket);
+
+	int usernameBool = -1;
+	while (usernameBool == -1){
+		printf("Would you like to enter a username?\n 0. Yes\n1. No\n");
+		if(fgets (userbool, 8, stdin) == NULL){
+			perror("Pain.");
 			exit(0);
 		}
-		//set move tracker
-		printf("Client's games played recieved: %d\n", gamesPlayed);
+
+		if(sscanf(userbool, "%d", &usernameBool) != 1){
+			usernameBool = -1;
+		}
+
+		if (usernameBool == 0){
+			printf("Enter your username below:\n");
+			if(fgets (username, 64, stdin) == NULL){
+				perror("Your username was too powerful. Bye.");
+				exit(0);
+			}
+			else {
+				int id;
+				recv(server_socket, &id, sizeof(int), 0);
+				if (id == 011){
+				send(server_socket, &username, 64, 0);
+			}
+			}
+		}
+		else if (usernameBool == 1){
+			strcpy(username, "Anonymous");
+		}
+		else {
+			usernameBool = -1;
+		}
+	}
+
+
+	printf("Please wait while we match you to an opponent.\n");
+
+	recv(server_socket, &opponentName, 64, 0);
+	printf("Match made! Your opponent is...%s!\n", opponentName);
+
+	while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
+		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
+		if (bytes_received <= 0){
+			perror("Client exiting due to empty message...\n");
+			exit(0);
+		}
+
 		int moveint = -1;
 
-		while (moveint < 0 || moveint > 2){ //while loop to ensure the sent value is greater than -1
-			printf ("Enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+		while (1){ //while loop to ensure the sent value is greater than -1
+			printf ("\n~~~~~~~~~~~~~\n");
+			printf ("    ROUND %d\n~~~~~~~~~~~~~\nPlease enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n", gamesPlayed);
 			char move[16];
 			moveint = -1;
 			if(fgets (move, 16, stdin) == NULL){
 				perror("Input closed. ");
-=======
-*/
-	void client_logic(int server_socket){
-		
-		printf("Match made! Your opponent is... (this is for later))\n");
-		int gamesPlayed = 0;
-		printf("%d\n", server_socket);
-		
-		while (gamesPlayed < 3){ //i.e., repeat until 3 rounds have been played
-			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-			if (bytes_received <= 0){
-				perror("Client exiting due to empty message...\n");
 				exit(0);
->>>>>>> main
 			}
-			printf("You have played %d games with this opponent\n", gamesPlayed);
-			
-			int moveint = -1;
-			
-			while (1){ //while loop to ensure the sent value is greater than -1
-				printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-				char move[16];
+			if(strcasecmp(move, "Info\n") == 0){
+				printf("SCOREBOARD");
+			}
+			printf("Move: %s", move);
+			if(sscanf(move, "%d", &moveint) != 1){
 				moveint = -1;
-				if(fgets (move, 16, stdin) == NULL){
-					perror("Input closed. ");
-					exit(0);
-				}
-				if(sscanf(move, "%d", &moveint) != 1){
-					moveint = -1;
-				}
-				printf("moveint %d\n", moveint);
-				if(moveint >= 0 && moveint<= 2){
-					break;
-				}
-				printf("Invalid input! Please enter again.\n");
 			}
-			printf("moveint %d\n", moveint);
-			
-			//Send move to server
-			send(server_socket, &moveint, sizeof(int), 0);
-			
-			//Receive opponent move
-			int opponentMove; 
-			recv(server_socket, &opponentMove, sizeof(int), 0);
-			printf("Opponent entered their move: "); printMove(opponentMove);
-			
-			int result;
-			recv(server_socket, &result, sizeof(int), 0);
-			printResult(result);
+			if(moveint >= 0 && moveint<= 2){
+				break;
+			}
+			else {
+				printf("Invalid input! Please try again.\n");
+			}
 		}
-<<<<<<< HEAD
-		//debug moveint = 16;
-		printf("Your move was: %d\n", moveint);
+
+		printf("You played: ");
+		printMove(moveint);
+
+		//Send move to server
 		send(server_socket, &moveint, sizeof(int), 0);
-=======
-		printf("Game ended.\n");
-		exit(0);
->>>>>>> main
-	}
-	
-	// a wrapper function that calls client_connect(char* IP, char* port)
-	// which returns connected socket descriptor.
-	int connect_to_server(char* IP){
-		int sockfd = client_connect(IP, PORT);
-		if (sockfd < 0){
-			perror("client_connect failed");
-		}
-		return sockfd;
-	}
 
-		
-	// optionally takes IP address from user input
-	// connects to the server (call connect_to_server)
-	// runs the client loop (call client_logic())
-	// close up socket at the end
-	int main(int argc, char* argv[]){
-		char* IP = "127.0.0.1";
-		if (argc > 1){
-			strcpy(IP, argv[1]);
-		}
-		int server_socket = connect_to_server(IP);
-		client_logic(server_socket);
+		//Receive opponent move
+		int opponentMove;
+		printf("Waiting for opponent...\n");
+		printMove(opponentMove);
+		recv(server_socket, &opponentMove, sizeof(int), 0);
+		printf("Opponent played "); printMove(opponentMove);
 
-		//before exiting, send a 'down' to server to reduce # of connections by 1
-		return (0);
+		int result;
+		recv(server_socket, &result, sizeof(int), 0); printResult(result);
+		send(server_socket, &moveint, sizeof(int), 0);
 	}
+	printf("Game ended.\n");
+	exit(0);
+}
+
+// a wrapper function that calls client_connect(char* IP, char* port)
+// which returns connected socket descriptor.
+int connect_to_server(char* IP){
+	int sockfd = client_connect(IP, PORT);
+	if (sockfd < 0){
+		perror("client_connect failed");
+	}
+	return sockfd;
+}
+
+
+// optionally takes IP address from user input
+// connects to the server (call connect_to_server)
+// runs the client loop (call client_logic())
+// close up socket at the end
+int main(int argc, char* argv[]){
+	char* IP = "127.0.0.1";
+	if (argc > 1){
+		strcpy(IP, argv[1]);
+	}
+	int server_socket = connect_to_server(IP);
+	client_logic(server_socket);
+
+	//before exiting, send a 'down' to server to reduce # of connections by 1
+	return (0);
+}

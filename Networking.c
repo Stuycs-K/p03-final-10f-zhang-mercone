@@ -93,6 +93,8 @@
 		int gamesPlayed = 0;
 		int Ascore = 0;
 		int Bscore = 0;
+		//send and recieve usernames here
+		sendUsernames(fdA, fdB);
 		while(stillWantGame == 1){
 			send(fdA, &gamesPlayed, sizeof(int), 0);
 			send(fdB, &gamesPlayed, sizeof(int), 0);
@@ -111,7 +113,7 @@
 					maxFD = fdB;
 				}
 
-				int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+				select(maxFD+1, &recv_fds, NULL, NULL, NULL);
 				if(FD_ISSET(fdA, &recv_fds)){
 					if(recv(fdA, &AMove, sizeof(int), 0) == 0){
 						stillWantGame = 0;
@@ -138,10 +140,7 @@
 			printf("Networking's gamesplayed (0-2): %d\n", gamesPlayed);
 			printf("Still want game?: %d\n", stillWantGame);
 			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
-<<<<<<< HEAD
 			printf("Networking's gamesplayed (0-2) post scorehandler: %d\n", gamesPlayed);
-=======
->>>>>>> main
 		}
 		return(stillWantGame);
 	}
@@ -163,6 +162,7 @@
 		return 1;
 	}
 
+//this is presumably for server
 	void sendUsernames(int fdA, int fdB){
 		int ANameReceived = -1;
 		int BNameReceived = -1;
@@ -182,7 +182,7 @@
 				maxFD = fdB;
 			}
 
-			int i = select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+			select(maxFD+1, &recv_fds, NULL, NULL, NULL);
 			if(FD_ISSET(fdA, &recv_fds)){
 				if(getUsername(fdA, AName) == 0){
 					printf("Lost connection\n");
@@ -198,6 +198,7 @@
 				BNameReceived = 0;
 			}
 		}
+		printf ("Aname %s Bname %s", AName, BName);
 	}
 
 //checks condition of server socket
