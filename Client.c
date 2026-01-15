@@ -102,32 +102,35 @@ void client_logic(int server_socket){
 			usernameBool = -1;
 		}
 
-		if (usernameBool == 0){
-			printf("Enter your username below:\n");
-			if(fgets (username, 64, stdin) == NULL){
-				perror("Your username was too powerful. Bye.");
-				exit(0);
+		if (usernameBool == 0 || usernameBool == 1){
+			if (usernameBool == 0){
+				printf("Enter your username below:\n");
+				if(fgets (username, 64, stdin) == NULL){
+					perror("Your username was too powerful. Bye.");
+					exit(0);
+				}
 			}
-			else {
-				int id;
-				recv(server_socket, &id, sizeof(int), 0);
-				if (id == 011){
-				send(server_socket, &username, 64, 0);
+			if (usernameBool == 1){
+				strncpy(username, "Anonymous", 64);
 			}
-			}
-		}
-		else if (usernameBool == 1){
-			strcpy(username, "Anonymous");
+			send(server_socket, &username, 64, 0);
 		}
 		else {
 			usernameBool = -1;
 		}
+
 	}
 
 
 	printf("Please wait while we match you to an opponent.\n");
+int bittern = recv(server_socket, &opponentName, 64, 0);
+printf("bittern %d", bittern);
 
-	recv(server_socket, &opponentName, 64, 0);
+	if (bittern <= 0){
+		perror("Error. Client not connected to server.\n");
+		exit(0);
+	}
+
 	printf("Match made! Your opponent is...%s!\n", opponentName);
 
 	while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
@@ -148,9 +151,9 @@ void client_logic(int server_socket){
 				perror("Input closed. ");
 				exit(0);
 			}
-			if(strcasecmp(move, "Info\n") == 0){
-				printf("SCOREBOARD");
-			}
+			// if(strcasecmp(move, "Info\n") == 0){
+			// 	printf("SCOREBOARD");
+			// }
 			printf("Move: %s", move);
 			if(sscanf(move, "%d", &moveint) != 1){
 				moveint = -1;

@@ -37,3 +37,4 @@ This document must be updated daily every time you finish a work session.
 ### 2026-01-14
 - Debugging continues:
   - GamesPlayed variation is caused due to the client actually recieving moveint (the move of the opposite client) and subbing it into gamesPlayed.
+- cute little semi-UI added to client to make it look more palatable.
