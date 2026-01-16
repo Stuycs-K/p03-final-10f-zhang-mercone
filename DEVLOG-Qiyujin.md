@@ -32,3 +32,4 @@ This was done by using select on stdin and on server_fd.
 
 ### 2026-01-15 - Add-ons
 - added replay option, and fixed bugs related to unchecked messages sent to clients. 
+- added userStats feature by allowing users to access their past game stats using 'history'. 
