@@ -10,6 +10,15 @@ By Lucia Mercone and Jason Zhang
 This project is a server-based game of Rock Paper Scissors.
 Clients connect and wait for the server to pair them with another client. Once connected, they will play 3 rounds of rock/paper/scissors, with ties not counting as rounds. Client also have the option to enter a username, which will be displayed to their opponent, and used to keep track of their past games played.Once finished, clients have the option to continue playing against their current matched opponent.
 
+List of Features
+- Username
+- Data Logging
+- Replay
+
+List of Scrapped Features
+- Auto-disconnecting client (when server is killed)
+- Chat Feature
+
 ### Instructions:
 - Compile and run server
 - Compile and run client
@@ -22,3 +31,6 @@ Key Commands
 ### Resources/ References:
 - Beej's Guide to Networking (https://beej.us/guide/bgnet/html/split/man-pages.html)
 - Stack Exchange
+
+### Video Link:
+- tbd

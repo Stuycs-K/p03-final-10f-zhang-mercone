@@ -44,4 +44,5 @@ This document must be updated daily every time you finish a work session.
 - Username implemented correctly this morning; the issue was due to the string being sent being shorter than 64 bytes, resulting in size mismatches when the opponent recieves your username. This mismatch means 64 bytes are read into queue, when only the arbitrary size would actually get read, and result in the remaining bytes clogging queue.
 
 ### 2026-01-16
--
+- Cleaned up server terminal messages, removed debug messages
+- Updated readme to include features + description

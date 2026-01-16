@@ -16,6 +16,7 @@
 #define NETWORKING_H
 #define MAX_CONNECTIONS 10
 #define PORT "12639"
+#define KEY 33
 //function headers go here
 void err(int i, char*message);
 int server_setup();

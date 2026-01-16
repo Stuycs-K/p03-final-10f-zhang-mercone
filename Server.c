@@ -44,6 +44,7 @@
 		printf("Running fork_subserver...\n");
 		int pid = fork();
 		if(pid == 0){ // child
+			printf("\t Subserver forked. Running match...\n");
 			run_match(clientA_fd, clientB_fd);
 			close(clientA_fd);
 			close(clientB_fd);
@@ -67,7 +68,7 @@
 			waitingQueue[i] = -1;
 		}
 		while (1){
-			printf("Waiting for clients\n");
+			printf("Waiting for clients...\n");
 			int client_socket = server_tcp_handshake(server_fd);
 			if (client_socket < 0){
 				perror("Client-Server handshake failed.\n");
@@ -81,7 +82,7 @@
 				printf("Number of connections is acceptable. Proceeding.\n");
 				waitingQueue[num_Connected] = client_socket;
 				num_Connected ++;
-				printf("Current number of connections: %d\nAdded to waiting queue.\n", num_Connected);
+				printf("Current number of connections: %d\nClient (FD: %d) added to waiting queue.\n", num_Connected, client_socket);
 				while(num_Connected > 1){
 					fork_subserver(waitingQueue[0], waitingQueue[1]);
 					num_Connected = moveClientsUp(waitingQueue, num_Connected);

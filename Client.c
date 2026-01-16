@@ -303,7 +303,7 @@ void printStats(char *username) {
 
 		//recieve other client's username
 		if (recv(server_socket, &opponentName, 64, 0) <= 0){
-			perror("Client exiting due to empty message...\n");
+			perror("Client exiting due to no username being sent.\n");
 			exit(0);
 		}
 		//match is successful, display this once
@@ -321,7 +321,7 @@ void printStats(char *username) {
 		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
-				perror("Client exiting due to empty message...\n");
+				printf("Game ended due to server disconnection.\n");
 				exit(0);
 			}
 			printf ("\n~~~~~~~~~~~~~\n   ROUND %d\n~~~~~~~~~~~~~\n", gamesPlayed+1);
@@ -354,7 +354,7 @@ void printStats(char *username) {
 					}
 
 					if (sscanf(buf, "%d", &moveint) == 1 &&
-						moveint >= 0 && moveint <= 2) {
+						((moveint >= 0 && moveint <= 2) || moveint == KEY)) {
 
 							printf("Your move: ");
 							printMove(moveint);
@@ -397,6 +397,7 @@ void printStats(char *username) {
 				if(myOpinion == 0){ // if user don't want to play anymore
 					break;
 				}
+				printf("Waiting to see if opponent wants to replay...\n");
 				int replayOrNot;
 				recv(server_socket, &replayOrNot, sizeof(int), 0);
 				if(replayOrNot == 0){ // opponent doesn't want to play anymore
@@ -407,7 +408,7 @@ void printStats(char *username) {
 					myScore = 0;
 					opponentScore = 0;
 					gamesPlayed = 0;
-					printf("Opponent agreed to replay\n");
+					printf("Opponent agreed to replay!\n");
 					sleep(1);
 				}
 			}

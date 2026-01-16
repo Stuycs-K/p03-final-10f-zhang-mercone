@@ -152,8 +152,6 @@
 					break;
 				}
 				sendResult(fdA, fdB, AMove, BMove); // In server, after displaying opponent's move, receive 1, -1, or 0 (win, loss, tie) and display result.
-				printf("Networking's gamesplayed: %d\n", gamesPlayed);
-				printf("Still want game?: %d\n", stillWantGame);
 				scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
 				sendScore(fdA, fdB, Ascore, Bscore);
 			}
@@ -222,12 +220,10 @@
 				BNameReceived = 0;
 			}
 		}
-		//debug
 		send(fdA, &BName, sizeof(BName), 0);
 		send(fdB, &AName, sizeof(AName), 0);
-		printf ("Aname %s Bname %s", AName, BName);
 	}
-	
+
 	int checkRematch(int fdA, int fdB){
 		int Aagree = -1;
 		int Bagree = -1;
@@ -247,13 +243,13 @@
 			select(maxFD+1, &recv_fds, NULL, NULL, NULL);
 			if(FD_ISSET(fdA, &recv_fds)){
 				if(recv(fdA, &Aagree, sizeof(int), 0) == 0){
-					printf("Child exited");
+					printf("Child A exited\n");
 					return 0;
 				}
 			}
 			if(FD_ISSET(fdB, &recv_fds)){
 				if(recv(fdB, &Bagree, sizeof(int), 0) == 0){
-					printf("Child exited");
+					printf("Child B exited\n");
 					return 0;
 				}
 			}
@@ -263,28 +259,3 @@
 		}
 		return 0;
 	}
-	
-
-//checks condition of server socket
-int ping (int server_socket){
-			 char buff;
-			 int socket_status = recv(server_socket, &buff, 1, MSG_PEEK | MSG_DONTWAIT);
-			 printf("Socket status: %d\n", socket_status);
-			 if (socket_status < 0){ //it error
-				 if (errno == EAGAIN || errno == EWOULDBLOCK){
-					 printf("errno hit EAGAIN/EWOULDBLOCK! \n"); //ignore it since it means no prev data, not dead server
-					 return 1;
-				 }
-				 else {
-					 err(socket_status, "socket is a NO-GO.\n");
-					 return -1;
-				 }
-			 }
-			 if (socket_status > 0) {
-					 return 1; //alive! yay!
-	     }
-			 else {
-				 //it ded
-				 return 0;
-			 }
-	 }
