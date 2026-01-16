@@ -12,7 +12,7 @@
 			int status;
 			while(waitpid(-1, &status, WNOHANG)>0){
 				if(!WIFEXITED(status)){
-					printf("Child exited abnormally.\n");
+					printf("Child exited.\n");
 				}
 			}
 		}
@@ -70,10 +70,10 @@
 			printf("Waiting for clients\n");
 			int client_socket = server_tcp_handshake(server_fd);
 			if (client_socket < 0){
-				perror("SERVER: Client-Server handshake failed.\n");
+				perror("Client-Server handshake failed.\n");
 				continue;
 			}
-			printf("SERVER: Client-Server handshake successful.\n");
+			printf("Client-Server handshake successful.\n");
 			//if a client_server handshake is successful, up num_connected by 1
 			//put the client's descriptor into an array
 			//if num_connected would be >= max #, backlog the connect and refuse it

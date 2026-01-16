@@ -93,6 +93,7 @@
 		int gamesPlayed = 0;
 		int Ascore = 0;
 		int Bscore = 0;
+		sendUsernames(fdA, fdB);
 		while(stillWantGame == 1){
 			if(gamesPlayed == 3){
 				if (checkRematch(fdA, fdB) == 0){
@@ -166,7 +167,7 @@
 		send(fdA, &ABresult, sizeof(int), 0); // if A wins, send 1; A loss, send 0; tie: -1
 		send(fdB, &BAresult, sizeof(int), 0); // if B wins, send 1; B loss, send 0; tie: -1
 	}
-	
+
 	void sendScore(int fdA, int fdB, int Ascore, int Bscore){
 		send(fdA, &Ascore, sizeof(int), 0);
 		send(fdA, &Bscore, sizeof(int), 0);
@@ -174,9 +175,10 @@
 		send(fdB, &Ascore, sizeof(int), 0);
 	}
 
+
 	int getUsername(int fd, char name[]){
-		int sendIdRequest = 011; // special int for getting id
-		send(fd, &sendIdRequest, sizeof(int), 0);
+		//int sendIdRequest = 011; // special int for getting id
+		//send(fd, &sendIdRequest, sizeof(int), 0);
 		if(recv(fd, name, 64, 0) == 0){
 			return 0;
 		}
@@ -184,6 +186,7 @@
 		return 1;
 	}
 
+//this is presumably for server
 	void sendUsernames(int fdA, int fdB){
 		int ANameReceived = -1;
 		int BNameReceived = -1;
@@ -219,6 +222,10 @@
 				BNameReceived = 0;
 			}
 		}
+		//debug
+		send(fdA, &BName, sizeof(BName), 0);
+		send(fdB, &AName, sizeof(AName), 0);
+		printf ("Aname %s Bname %s", AName, BName);
 	}
 	
 	int checkRematch(int fdA, int fdB){
@@ -265,7 +272,7 @@ int ping (int server_socket){
 			 printf("Socket status: %d\n", socket_status);
 			 if (socket_status < 0){ //it error
 				 if (errno == EAGAIN || errno == EWOULDBLOCK){
-					 printf("errno hit EAGAIN/EWOULDBLOCK! \n");
+					 printf("errno hit EAGAIN/EWOULDBLOCK! \n"); //ignore it since it means no prev data, not dead server
 					 return 1;
 				 }
 				 else {

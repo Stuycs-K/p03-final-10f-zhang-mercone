@@ -55,6 +55,7 @@ void scorehandler (int* games_played, int* a_score, int* b_score, int a_move, in
 int compare_move(int a_move, int b_move){
   printf("Amove: %d, Bmove: %d\n", a_move, b_move);
   int winner = 0;
+  //A move ROCK
   if (a_move == ROCK){
     if (b_move == ROCK){
       winner = -1; //tie
@@ -69,7 +70,7 @@ int compare_move(int a_move, int b_move){
       printf ("This is an error and should not occur.\n");
     }
   }
-
+  //A move PAPER
   else if (a_move == PAPER){
     if (b_move == PAPER){
       winner = -1; //tie
@@ -84,6 +85,7 @@ int compare_move(int a_move, int b_move){
       printf ("This is an error and should not occur.\n");
     }
   }
+  //A move = scissors
   else if (a_move == SCISSORS){
     if (b_move == SCISSORS){
       winner = -1; //tie
