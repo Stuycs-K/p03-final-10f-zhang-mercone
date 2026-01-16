@@ -95,7 +95,7 @@ int askReplay(int server_socket){
 	}
 	if(strcmp(response, "yes")== 0){
 		opinion = 1;
-		
+
 	}
 	else{
 		opinion = 0;
@@ -136,36 +136,36 @@ void appendScore(char *username, char *opponent, int myScore, int opponentScore)
     char line[256] = {0};
     char timestamp[64] = {0};
     char numbuf[16] = {0};
-	
+
     // Build path: userStats/<username>.txt
     strcpy(path, "userStats/");
     strcat(path, username);
     strcat(path, ".txt");
-	
+
     // Build timestamp
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", t);
-	
+
     // Start building the one-line entry
     strcpy(line, "[");
     strcat(line, timestamp);
     strcat(line, "] ");
-	
+
     strcat(line, "vs ");
     strcat(line, opponent);
     strcat(line, " | Result: ");
-	
+
     if (myScore > opponentScore){
 		strcat(line, "Win");
 	}
-    else if (myScore < opponentScore){ 
+    else if (myScore < opponentScore){
 		strcat(line, "Loss");
 	}
     else{
 		strcat(line, "Tie");
 	}
-	
+
     strcat(line, " | Final Score: ");
     sprintf(numbuf, "%d", myScore);
     strcat(line, numbuf);
@@ -173,7 +173,7 @@ void appendScore(char *username, char *opponent, int myScore, int opponentScore)
     sprintf(numbuf, "%d", opponentScore);
     strcat(line, numbuf);
     strcat(line, "\n");
-	
+
     // Append to file
     int fd = open(path, O_WRONLY | O_APPEND);
     if (fd == -1) {
@@ -189,31 +189,31 @@ void printStats(char *username) {
     char buffer[256] = {0};
     int fd;
     int bytes;
-	
+
     // Build path: userStats/<username>.txt
     strcpy(path, "userStats/");
     strcat(path, username);
     strcat(path, ".txt");
-	
+
     fd = open(path, O_RDONLY);
     if (fd == -1) {
         printf("No stats found for user '%s'.\n", username);
         return;
     }
-	
+
     printf("\n===== Match History for %s =====\n", username);
-	
+
 	bytes = read(fd, buffer, sizeof(buffer) - 1);
 
     // Read and print file contents
     while (bytes > 0) {
-        buffer[bytes] = '\0'; 
+        buffer[bytes] = '\0';
         printf("%s", buffer);
 		bytes = read(fd, buffer, sizeof(buffer) - 1);
     }
-	
+
     printf("================================\n\n");
-	
+
     close(fd);
 }
 
@@ -260,7 +260,7 @@ void printStats(char *username) {
 							printf("Username already exists! Try another one.\n");
 							continue;
 						}
-						nameFitsRequirement = 1; // if nothing's wrong, break the loop. 
+						nameFitsRequirement = 1; // if nothing's wrong, break the loop.
 						hasUsername = 1;
 					}
 				}
@@ -285,12 +285,12 @@ void printStats(char *username) {
 			int fd = open(path, O_CREAT | O_WRONLY | O_APPEND, 0666);
 			if (fd == -1) {
 				perror("Could not create userStats file");
-			} 
+			}
 			else {
 				close(fd);
 			}
 		}
-		
+
 		//placate customer while waiting
 		//maybe 'welcome x'
 		if (strcmp(username, "opponent") == 0){
@@ -318,8 +318,6 @@ void printStats(char *username) {
 		int gamesPlayed = 0;
 		int myScore = 0;
 		int opponentScore = 0;
-		
-		printf("Feel free to type in 'history' to see past game stats\n");
 		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
@@ -330,7 +328,7 @@ void printStats(char *username) {
 			printf("Current score:\n    You (%d)\n    %s (%d)\n", myScore, opponentName, opponentScore);
 			moveAllowed = 1;
 			int moveint = -1;
-			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+			printf ("Please enter the number of one of the options, or 'history' to see past game stats:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
 			while (1) {
 				fd_set read_fds;
 				FD_ZERO(&read_fds);
@@ -390,7 +388,7 @@ void printStats(char *username) {
 			recv(server_socket, &myScore, sizeof(int), 0);
 			recv(server_socket, &opponentScore, sizeof(int), 0);
 			sleep(1);
-			
+
 			//checks for replay
 			if(gamesPlayed == 2){
 				printf("The score is %d to %d\n", myScore, opponentScore);
@@ -444,7 +442,5 @@ void printStats(char *username) {
 		}
 		int server_socket = connect_to_server(IP);
 		client_logic(server_socket);
-
-		//before exiting, send a 'down' to server to reduce # of connections by 1
 		return (0);
 	}

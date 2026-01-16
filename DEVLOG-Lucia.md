@@ -38,3 +38,10 @@ This document must be updated daily every time you finish a work session.
 - Debugging continues:
   - GamesPlayed variation is caused due to the client actually recieving moveint (the move of the opposite client) and subbing it into gamesPlayed.
 - cute little semi-UI added to client to make it look more palatable.
+- First draft of username interface created. Did not function correctly, was temporarily commented out.
+
+### 2026-01-15
+- Username implemented correctly this morning; the issue was due to the string being sent being shorter than 64 bytes, resulting in size mismatches when the opponent recieves your username. This mismatch means 64 bytes are read into queue, when only the arbitrary size would actually get read, and result in the remaining bytes clogging queue.
+
+### 2026-01-16
+-
