@@ -81,121 +81,129 @@ int askReplay(int server_socket){
 	return opinion;
 }
 
-// Asks for user move and sends to server. Then waits for server response for the game.
-// Displays the result to user.
-// Later: can have the option to ask for username, send to server, and get opponent's username and display etc.
-// Later 2: after each match ask if the users want another game. Redo if both replied yes.
-// Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
+	// Asks for user move and sends to server. Then waits for server response for the game.
+	// Displays the result to user.
+	// Later: can have the option to ask for username, send to server, and get opponent's username and display etc.
+	// Later 2: after each match ask if the users want another game. Redo if both replied yes.
+	// Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
-void client_logic(int server_socket){
-	char opponentName[64]; //grab opponent username
-	char username[64];
-	char userbool[8];
-	// debug printf(": Server Socket %d\n", server_socket);
+	void client_logic(int server_socket){
+		char opponentName[64]; //grab opponent username
+		char username[64];
+		char usertemp[64];
+		char userbool[8];
+		// debug printf(": Server Socket %d\n", server_socket);
 
-	//some fun stuffs
-	printf("Welcome to Rock! Paper! Scissors!, the newest sensation rocking the nation!\n");
-	printf("The rules are simple: Three rounds of Rock Paper Scissors, and may the best player win. Good luck!\n");
+		//some fun stuffs
+		printf("Welcome to Rock! Paper! Scissors!, the newest sensation rocking the nation!\n");
+		printf("The rules are simple: Three rounds of Rock Paper Scissors, and may the best player win. Good luck!\n");
 
-	//username entering thing
-	int usernameBool = -1;
-	while (usernameBool == -1){
-		printf("Would you like to enter a username?\n 0. Yes\n 1. No\n");
-		if(fgets (userbool, 8, stdin) == NULL){
-			perror("Error in username boolean.");
-			exit(0);
-		}
-		if(sscanf(userbool, "%d", &usernameBool) != 1){
-			usernameBool = -1;
-		}
+		//username entering thing
+		int usernameBool = -1;
+		while (usernameBool == -1){
+			printf("Would you like to enter a username?\n 0. Yes\n 1. No\n");
+			if(fgets (userbool, 8, stdin) == NULL){
+				perror("Error in username boolean.");
+				exit(0);
+			}
+			if(sscanf(userbool, "%d", &usernameBool) != 1){
+				usernameBool = -1;
+			}
 
-		if (usernameBool == 0 || usernameBool == 1){
-			if (usernameBool == 0){
-				printf("Enter your username below:\n");
-				if(fgets (username, 63, stdin) == NULL){
-					perror("Your username was too powerful. Bye.");
-					exit(0);
+			if (usernameBool == 0 || usernameBool == 1){
+				if (usernameBool == 0){
+					printf("Enter your username below:\n");
+					if(fgets (usertemp, 63, stdin) == NULL){
+						perror("Your username was too powerful. Bye.");
+						exit(0);
+					}
 				}
+				if (usernameBool == 1){
+					strcpy(usertemp, "opponent\n");
+				}
+				usertemp[strlen(usertemp) - 1] = '\0';
+				strcpy(username, usertemp);
+				username[63] = '\0';
+				send(server_socket, &username, sizeof(username), 0);
 			}
-			if (usernameBool == 1){
-				strncpy(username, "opponent", 64);
+			else {
+				usernameBool = -1;
 			}
-			username[63] = '\0';
-			send(server_socket, &username, sizeof(username), 0);
 		}
-		else {
-			usernameBool = -1;
-		}
-	}
-	//placate customer while waiting
-	//maybe 'welcome x'!
-	printf("Please wait while we connect you to a fellow player...\n");
+		//placate customer while waiting
+		//maybe 'welcome x'
+		if (strcmp(username, "opponent") == 0){
+				//if no username was entered
+				printf("Welcome, guest who shall remain unnamed.\nPlease wait while we connect you to a fellow player...\n");
+			}
+			else {
+				printf("Welcome, %s.\nPlease wait while we connect you to a fellow player...\n", username);
+			}
 
-	//recieve other client's username
-	if (recv(server_socket, &opponentName, 64, 0) <= 0){
-		perror("Client exiting due to empty message...\n");
-		exit(0);
-	}
-	//match is successful, display this once
-	if (strcmp(opponentName, "opponent") == 0){
-		//if no username was entered
-		printf("Match made! Your opponent is a mysterious person who shall remain unnamed.\n");
-	}
-	else {
-		printf("Match made! Your opponent is...%s\n", opponentName);
-	}
-
-	int gamesPlayed = 0;
-	int myScore = 0;
-	int opponentScore = 0;
-
-	while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
-		int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
-		if (bytes_received <= 0){
+		//recieve other client's username
+		if (recv(server_socket, &opponentName, 64, 0) <= 0){
 			perror("Client exiting due to empty message...\n");
 			exit(0);
 		}
-		printf ("\n~~~~~~~~~~~~~\n   ROUND %d\n~~~~~~~~~~~~~\n", gamesPlayed+1);
-		printf("Current score:\n    You (%d)\n    %s (%d)\n", myScore, opponentName, opponentScore);
-		moveAllowed = 1;
-		int moveint = -1;
-		printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
-		while (1) {
-			fd_set read_fds;
-			FD_ZERO(&read_fds);
+		//match is successful, display this once
+		if (strcmp(opponentName, "opponent") == 0){
+			//if no username was entered
+			printf("Match made! Your opponent is a mysterious person who shall remain unnamed.\n");
+		}
+		else {
+			printf("Match made! Your opponent is...%s\n", opponentName);
+		}
 
-			FD_SET(STDIN_FILENO, &read_fds);
-			FD_SET(server_socket, &read_fds);
+		int gamesPlayed = 0;
+		int myScore = 0;
+		int opponentScore = 0;
 
-			int maxfd = server_socket + 1;
-			select(maxfd, &read_fds, NULL, NULL, NULL);
+		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
+			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
+			if (bytes_received <= 0){
+				perror("Client exiting due to empty message...\n");
+				exit(0);
+			}
+			printf ("\n~~~~~~~~~~~~~\n   ROUND %d\n~~~~~~~~~~~~~\n", gamesPlayed+1);
+			printf("Current score:\n    You (%d)\n    %s (%d)\n", myScore, opponentName, opponentScore);
+			moveAllowed = 1;
+			int moveint = -1;
+			printf ("Please enter the number of one of the options:\n\t0. Rock\n\t1. Paper\n\t2. Scissors\n");
+			while (1) {
+				fd_set read_fds;
+				FD_ZERO(&read_fds);
 
-			char buf[32];
-			fgets(buf, sizeof(buf), stdin);
-			buf[strcspn(buf, "\n")] = 0;
+				FD_SET(STDIN_FILENO, &read_fds);
+				FD_SET(server_socket, &read_fds);
 
-			if (FD_ISSET(STDIN_FILENO, &read_fds)) {
-				if (!moveAllowed) {
-					printf("Too early! Wait for your turn.\n");
-					flush_stdin();
-					continue;
-				}
+				int maxfd = server_socket + 1;
+				select(maxfd, &read_fds, NULL, NULL, NULL);
 
-
-				if (sscanf(buf, "%d", &moveint) == 1 &&
-					moveint >= 0 && moveint <= 2) {
-
-						printf("Your move: ");
-						printMove(moveint);
-
-						moveAllowed = 0;
-						send(server_socket, &moveint, sizeof(int), 0);
+				if (FD_ISSET(STDIN_FILENO, &read_fds)) {
+					if (!moveAllowed) {
+						printf("Too early! Wait for your turn.\n");
+						flush_stdin();
 						continue;
 					}
+					
+					char buf[32];
+					fgets(buf, sizeof(buf), stdin);
+					buf[strcspn(buf, "\n")] = 0;
 
-					else {
-						printf("Invalid input! Please enter again.\n");
-					}
+					if (sscanf(buf, "%d", &moveint) == 1 &&
+						moveint >= 0 && moveint <= 2) {
+
+							printf("Your move: ");
+							printMove(moveint);
+
+							moveAllowed = 0;
+							send(server_socket, &moveint, sizeof(int), 0);
+							printf("Waiting for %s's move...\n", opponentName);
+						}
+
+						else {
+							printf("Invalid input! Please try again.\n");
+						}
 
 				}
 
@@ -203,7 +211,6 @@ void client_logic(int server_socket){
 					break;
 				}
 			}
-			printf("Waiting for %s's move...", opponentName);
 
 			//Receive opponent move
 			int opponentMove;
