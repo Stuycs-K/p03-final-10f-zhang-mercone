@@ -94,6 +94,22 @@
 		int Ascore = 0;
 		int Bscore = 0;
 		while(stillWantGame == 1){
+			if(gamesPlayed == 3){
+				if (checkRematch(fdA, fdB) == 0){
+					int goodToGo = 0;
+					send(fdA, &goodToGo, sizeof(int), 0);
+					send(fdB, &goodToGo, sizeof(int), 0);
+					break;
+				}
+				else{
+					int goodToGo = 1;
+					send(fdA, &goodToGo, sizeof(int), 0);
+					send(fdB, &goodToGo, sizeof(int), 0);
+					Ascore = 0;
+					Bscore = 0;
+					gamesPlayed = 0;
+				}
+			}
 			send(fdA, &gamesPlayed, sizeof(int), 0);
 			send(fdB, &gamesPlayed, sizeof(int), 0);
 			int AMove = -1;
@@ -125,20 +141,21 @@
 					}
 				}
 			}
-
-			if(send(fdB, &AMove, sizeof(int), 0) == 0){ // After moves from both clients are received, send opponent's move to A and B. In client, receive this message and display it.
-				stillWantGame = 0;
-				break;
+			if(stillWantGame == 1){
+				if(send(fdB, &AMove, sizeof(int), 0) == 0){ // After moves from both clients are received, send opponent's move to A and B. In client, receive this message and display it.
+					stillWantGame = 0;
+					break;
+				}
+				if(send(fdA, &BMove, sizeof(int), 0) == 0){
+					stillWantGame = 0;
+					break;
+				}
+				sendResult(fdA, fdB, AMove, BMove); // In server, after displaying opponent's move, receive 1, -1, or 0 (win, loss, tie) and display result.
+				printf("Networking's gamesplayed: %d\n", gamesPlayed);
+				printf("Still want game?: %d\n", stillWantGame);
+				scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
+				sendScore(fdA, fdB, Ascore, Bscore);
 			}
-			if(send(fdA, &BMove, sizeof(int), 0) == 0){
-				stillWantGame = 0;
-				break;
-			}
-			sendResult(fdA, fdB, AMove, BMove); // In server, after displaying opponent's move, receive 1, -1, or 0 (win, loss, tie) and display result.
-			printf("Networking's gamesplayed: %d\n", gamesPlayed);
-			printf("Still want game?: %d\n", stillWantGame);
-			scorehandler(&gamesPlayed, &Ascore, &Bscore, AMove, BMove); // Changes statistics of winning status.
-			sendScore(fdA, fdB, Ascore, Bscore);
 		}
 		return(stillWantGame);
 	}
@@ -203,6 +220,43 @@
 			}
 		}
 	}
+	
+	int checkRematch(int fdA, int fdB){
+		int Aagree = -1;
+		int Bagree = -1;
+		while(Aagree == -1 || Bagree == -1){
+			fd_set recv_fds;
+			FD_ZERO(&recv_fds);
+			FD_SET(fdA, &recv_fds);
+			FD_SET(fdB, &recv_fds);
+			int maxFD;
+			if(fdA > fdB){
+				maxFD = fdA;
+			}
+			else{
+				maxFD = fdB;
+			}
+
+			select(maxFD+1, &recv_fds, NULL, NULL, NULL);
+			if(FD_ISSET(fdA, &recv_fds)){
+				if(recv(fdA, &Aagree, sizeof(int), 0) == 0){
+					printf("Child exited");
+					return 0;
+				}
+			}
+			if(FD_ISSET(fdB, &recv_fds)){
+				if(recv(fdB, &Bagree, sizeof(int), 0) == 0){
+					printf("Child exited");
+					return 0;
+				}
+			}
+		}
+		if(Aagree && Bagree){
+			return 1;
+		}
+		return 0;
+	}
+	
 
 //checks condition of server socket
 int ping (int server_socket){

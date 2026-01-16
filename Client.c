@@ -47,6 +47,40 @@ void printResult(int result){
 	}
 }
 
+void trimNewLine(char input[], int leng){
+	while (leng > 0 && (input[leng-1] == '\n' || input[leng-1] == '\r')) {
+		input[leng - 1] = '\0';
+		leng --;
+	}
+}
+
+int askReplay(int server_socket){
+	printf("Would you like to replay? (yes/no)\n");
+	char response[16];
+	for(int i = 0; i < 16; i ++){
+		response[i] = '\0';
+	}
+	int opinion;
+	fgets(response, 16, stdin);
+	int responseLen = strlen(response);
+	trimNewLine(response, responseLen);
+	while(strcmp(response, "yes")!= 0 && strcmp(response, "no")!= 0){
+		printf("please enter yes/no!\n");
+		fgets(response, 16, stdin);
+		responseLen = strlen(response);
+		trimNewLine(response, responseLen);
+	}
+	if(strcmp(response, "yes")== 0){
+		opinion = 1;
+		
+	}
+	else{
+		opinion = 0;
+	}
+	send(server_socket, &opinion, sizeof(int), 0);
+	return opinion;
+}
+
 // Asks for user move and sends to server. Then waits for server response for the game.
 // Displays the result to user.
 // Later: can have the option to ask for username, send to server, and get opponent's username and display etc.
@@ -74,13 +108,12 @@ void client_logic(int server_socket){
 
 */
 	void client_logic(int server_socket){
-		
 		printf("Match made! Your opponent is... (this is for later))\n");
 		int gamesPlayed = 0;
 		int myScore = 0;
 		int opponentScore = 0;
 		
-		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
+		while (1){
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
 				perror("Client exiting due to empty message...\n");
@@ -119,6 +152,7 @@ void client_logic(int server_socket){
 
 						moveAllowed = 0;
 						send(server_socket, &moveint, sizeof(int), 0);
+						continue;
 					}
 					else{
 						printf("Invalid input! Please enter again.\n");
@@ -142,8 +176,29 @@ void client_logic(int server_socket){
 			recv(server_socket, &opponentScore, sizeof(int), 0);
 			sleep(1);
 			
+			
+			//checks for replay
+			if(gamesPlayed == 2){
+				printf("The score is %d to %d\n", myScore, opponentScore);
+				int myOpinion = askReplay(server_socket);
+				if(myOpinion == 0){ // if user don't want to play anymore
+					break;
+				}
+				int replayOrNot;
+				recv(server_socket, &replayOrNot, sizeof(int), 0);
+				if(replayOrNot == 0){ // opponent doesn't want to play anymore
+					printf("Opponent exited. \n");
+					break;
+				}
+				else{
+					myScore = 0;
+					opponentScore = 0;
+					printf("Opponent agreed to replay\n");
+					sleep(1);
+				}
+			}
+			
 		}
-		printf("The score is %d to %d\n", myScore, opponentScore);
 		printf("Game ended.\n");
 		exit(0);
 	}

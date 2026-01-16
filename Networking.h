@@ -26,6 +26,7 @@ void sendResult(int fdA, int fdB, int Amove, int Bmove);
 void sendScore(int fdA, int fdB, int Ascore, int Bscore);
 int getUsername(int fd, char name[]);
 void sendUsernames(int fdA, int fdB);
+int checkRematch(int fdA, int fdB);
 
 int ping (int server_socket);
 #endif
