@@ -56,6 +56,7 @@ void printResult(int result){
 void client_logic(int server_socket){
 	char opponentName[64]; //grab opponent username
 	char username[64];
+	char usertemp[64];
 	char userbool[8];
 	// debug printf(": Server Socket %d\n", server_socket);
 
@@ -79,14 +80,16 @@ void client_logic(int server_socket){
 		if (usernameBool == 0 || usernameBool == 1){
 			if (usernameBool == 0){
 				printf("Enter your username below:\n");
-				if(fgets (username, 63, stdin) == NULL){
+				if(fgets (usertemp, 63, stdin) == NULL){
 					perror("Your username was too powerful. Bye.");
 					exit(0);
 				}
 			}
 			if (usernameBool == 1){
-				strncpy(username, "opponent", 64);
+				strcpy(usertemp, "opponent\n");
 			}
+			usertemp[strlen(usertemp) - 1] = '\0';
+			strcpy(username, usertemp);
 			username[63] = '\0';
 			send(server_socket, &username, sizeof(username), 0);
 		}
@@ -95,8 +98,14 @@ void client_logic(int server_socket){
 		}
 	}
 	//placate customer while waiting
-	//maybe 'welcome x'!
-	printf("Please wait while we connect you to a fellow player...\n");
+	//maybe 'welcome x'
+	if (strcmp(username, "opponent") == 0){
+			//if no username was entered
+			printf("Welcome, guest who shall remain unnamed.\nPlease wait while we connect you to a fellow player...\n");
+		}
+		else {
+			printf("Welcome, %s.\nPlease wait while we connect you to a fellow player...\n", username);
+		}
 
 	//recieve other client's username
 	if (recv(server_socket, &opponentName, 64, 0) <= 0){
@@ -148,7 +157,6 @@ void client_logic(int server_socket){
 					continue;
 				}
 
-
 				if (sscanf(buf, "%d", &moveint) == 1 &&
 					moveint >= 0 && moveint <= 2) {
 
@@ -157,10 +165,11 @@ void client_logic(int server_socket){
 
 						moveAllowed = 0;
 						send(server_socket, &moveint, sizeof(int), 0);
+						printf("Waiting for %s's move...\n", opponentName);
 					}
 
 					else {
-						printf("Invalid input! Please enter again.\n");
+						printf("Invalid input! Please try again.\n");
 					}
 
 				}
@@ -169,7 +178,6 @@ void client_logic(int server_socket){
 					break;
 				}
 			}
-			printf("Waiting for %s's move...", opponentName);
 
 			//Receive opponent move
 			int opponentMove;
