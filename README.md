@@ -33,4 +33,4 @@ Key Commands
 - Stack Exchange
 
 ### Video Link:
-- tbd
+- https://drive.google.com/file/d/1Y6GsGzxmyIZGwJJlFGxWZrgRxaY7B4uB/view?usp=sharing (please email luciam25@nycstudent.net if this doesn't work)
