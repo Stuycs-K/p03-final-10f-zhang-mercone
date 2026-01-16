@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <errno.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -13,9 +14,31 @@
 #include "Networking.h"
 #include "GameLogic.h"
 
+int hasUsername = 0;
 int moveAllowed = 0;
+char userName[64] = {0};
 // The purpose of this .c is to send stuff (like user input) to server
 // or to get stuff (like results) from server.
+
+static void sighandler(int signo){
+		if(signo == SIGINT){
+			if(hasUsername){
+				char lockpath[128] = {0};
+				strcpy(lockpath, "userStats/");
+				strcat(lockpath, userName);
+				strcat(lockpath, ".lock");
+				// Remove lock file
+				unlink(lockpath);
+				printf("lock file %s removed.\n", lockpath);
+			}
+			else{
+				printf("\n you have exited the game\n");
+			}
+			exit(0);
+		}
+	}
+
+
 void flush_stdin(){
 	int ch = getchar();
 	while(ch != '\n' && ch != EOF){
@@ -56,7 +79,7 @@ void trimNewLine(char input[], int leng){
 
 int askReplay(int server_socket){
 	printf("Would you like to replay? (yes/no)\n");
-	char response[16];
+	char response[16] = {0};
 	for(int i = 0; i < 16; i ++){
 		response[i] = '\0';
 	}
@@ -81,6 +104,119 @@ int askReplay(int server_socket){
 	return opinion;
 }
 
+int username_exist(char *username) {
+    char path[128] = {0};
+    // Build: "userStats/" + username + ".txt"
+    strcpy(path, "userStats/");
+    strcat(path, username);
+    strcat(path, ".lock");
+    int fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0666);
+    if (fd == -1) {
+        if (errno == EEXIST) {
+            return 1; // username already exists
+        }
+        perror("open");
+        return 1; // treat other errors as "taken"
+    }
+    close(fd);
+    return 0; // username accepted
+}
+
+void release_username(char *username) {
+    char lockpath[128] = {0};
+    strcpy(lockpath, "userStats/");
+    strcat(lockpath, username);
+    strcat(lockpath, ".lock");
+    unlink(lockpath);  // remove lock file
+}
+
+
+void appendScore(char *username, char *opponent, int myScore, int opponentScore) {
+    char path[128] = {0};
+    char line[256] = {0};
+    char timestamp[64] = {0};
+    char numbuf[16] = {0};
+	
+    // Build path: userStats/<username>.txt
+    strcpy(path, "userStats/");
+    strcat(path, username);
+    strcat(path, ".txt");
+	
+    // Build timestamp
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", t);
+	
+    // Start building the one-line entry
+    strcpy(line, "[");
+    strcat(line, timestamp);
+    strcat(line, "] ");
+	
+    strcat(line, "vs ");
+    strcat(line, opponent);
+    strcat(line, " | Result: ");
+	
+    if (myScore > opponentScore){
+		strcat(line, "Win");
+	}
+    else if (myScore < opponentScore){ 
+		strcat(line, "Loss");
+	}
+    else{
+		strcat(line, "Tie");
+	}
+	
+    strcat(line, " | Final Score: ");
+    sprintf(numbuf, "%d", myScore);
+    strcat(line, numbuf);
+    strcat(line, "-");
+    sprintf(numbuf, "%d", opponentScore);
+    strcat(line, numbuf);
+    strcat(line, "\n");
+	
+    // Append to file
+    int fd = open(path, O_WRONLY | O_APPEND);
+    if (fd == -1) {
+        perror("appendScore open");
+        return;
+    }
+    write(fd, line, strlen(line));
+    close(fd);
+}
+
+void printStats(char *username) {
+    char path[128] = {0};
+    char buffer[256] = {0};
+    int fd;
+    int bytes;
+	
+    // Build path: userStats/<username>.txt
+    strcpy(path, "userStats/");
+    strcat(path, username);
+    strcat(path, ".txt");
+	
+    fd = open(path, O_RDONLY);
+    if (fd == -1) {
+        printf("No stats found for user '%s'.\n", username);
+        return;
+    }
+	
+    printf("\n===== Match History for %s =====\n", username);
+	
+	bytes = read(fd, buffer, sizeof(buffer) - 1);
+
+    // Read and print file contents
+    while (bytes > 0) {
+        buffer[bytes] = '\0'; 
+        printf("%s", buffer);
+		bytes = read(fd, buffer, sizeof(buffer) - 1);
+    }
+	
+    printf("================================\n\n");
+	
+    close(fd);
+}
+
 	// Asks for user move and sends to server. Then waits for server response for the game.
 	// Displays the result to user.
 	// Later: can have the option to ask for username, send to server, and get opponent's username and display etc.
@@ -88,10 +224,10 @@ int askReplay(int server_socket){
 	// Later 3: if no response after a certain time duration (e.g. 10s) quit automatically.
 
 	void client_logic(int server_socket){
-		char opponentName[64]; //grab opponent username
-		char username[64];
-		char usertemp[64];
-		char userbool[8];
+		char opponentName[64] = {0}; //grab opponent username
+		char username[64] = {0};
+		char usertemp[64] = {0};
+		char userbool[8] = {0};
 		// debug printf(": Server Socket %d\n", server_socket);
 
 		//some fun stuffs
@@ -112,16 +248,25 @@ int askReplay(int server_socket){
 
 			if (usernameBool == 0 || usernameBool == 1){
 				if (usernameBool == 0){
-					printf("Enter your username below:\n");
-					if(fgets (usertemp, 63, stdin) == NULL){
-						perror("Your username was too powerful. Bye.");
-						exit(0);
+					int nameFitsRequirement = 0;
+					while(!nameFitsRequirement){
+						printf("Enter your username below:\n");
+						if(fgets (usertemp, 63, stdin) == NULL){
+							printf("Please enter a shorter username!\n");
+							continue;
+						}
+						usertemp[strcspn(usertemp, "\n")] = '\0';
+						if(username_exist(usertemp)){
+							printf("Username already exists! Try another one.\n");
+							continue;
+						}
+						nameFitsRequirement = 1; // if nothing's wrong, break the loop. 
+						hasUsername = 1;
 					}
 				}
 				if (usernameBool == 1){
-					strcpy(usertemp, "opponent\n");
+					strcpy(usertemp, "opponent");
 				}
-				usertemp[strlen(usertemp) - 1] = '\0';
 				strcpy(username, usertemp);
 				username[63] = '\0';
 				send(server_socket, &username, sizeof(username), 0);
@@ -130,6 +275,22 @@ int askReplay(int server_socket){
 				usernameBool = -1;
 			}
 		}
+		if(hasUsername){
+			strcpy(userName, username); // copies to global variable
+			char path[128] = {0};
+			// Build path: userStats/ + username + .txt
+			strcpy(path, "userStats/");
+			strcat(path, username);
+			strcat(path, ".txt");
+			int fd = open(path, O_CREAT | O_WRONLY | O_APPEND, 0666);
+			if (fd == -1) {
+				perror("Could not create userStats file");
+			} 
+			else {
+				close(fd);
+			}
+		}
+		
 		//placate customer while waiting
 		//maybe 'welcome x'
 		if (strcmp(username, "opponent") == 0){
@@ -157,7 +318,8 @@ int askReplay(int server_socket){
 		int gamesPlayed = 0;
 		int myScore = 0;
 		int opponentScore = 0;
-
+		
+		printf("Feel free to type in 'history' to see past game stats\n");
 		while (gamesPlayed < 2){ //i.e., repeat until 3 rounds have been played
 			int bytes_received = recv(server_socket, &gamesPlayed, sizeof(int), 0);
 			if (bytes_received <= 0){
@@ -180,15 +342,18 @@ int askReplay(int server_socket){
 				select(maxfd, &read_fds, NULL, NULL, NULL);
 
 				if (FD_ISSET(STDIN_FILENO, &read_fds)) {
+					char buf[32] = {0};
+					fgets(buf, sizeof(buf), stdin);
+					buf[strcspn(buf, "\n")] = 0;
+					if(strcmp(buf, "history") == 0){
+						printStats(username);
+						continue;
+					}
 					if (!moveAllowed) {
 						printf("Too early! Wait for your turn.\n");
 						flush_stdin();
 						continue;
 					}
-					
-					char buf[32];
-					fgets(buf, sizeof(buf), stdin);
-					buf[strcspn(buf, "\n")] = 0;
 
 					if (sscanf(buf, "%d", &moveint) == 1 &&
 						moveint >= 0 && moveint <= 2) {
@@ -203,6 +368,8 @@ int askReplay(int server_socket){
 
 						else {
 							printf("Invalid input! Please try again.\n");
+							flush_stdin();
+							continue;
 						}
 
 				}
@@ -227,6 +394,7 @@ int askReplay(int server_socket){
 			//checks for replay
 			if(gamesPlayed == 2){
 				printf("The score is %d to %d\n", myScore, opponentScore);
+				appendScore(username, opponentName, myScore, opponentScore);
 				int myOpinion = askReplay(server_socket);
 				if(myOpinion == 0){ // if user don't want to play anymore
 					break;
@@ -240,10 +408,14 @@ int askReplay(int server_socket){
 				else{
 					myScore = 0;
 					opponentScore = 0;
+					gamesPlayed = 0;
 					printf("Opponent agreed to replay\n");
 					sleep(1);
 				}
 			}
+		}
+		if(hasUsername){
+			release_username(username);
 		}
 		printf("Game ended.\n");
 		exit(0);
@@ -265,6 +437,7 @@ int askReplay(int server_socket){
 	// runs the client loop (call client_logic())
 	// close up socket at the end
 	int main(int argc, char* argv[]){
+		signal(SIGINT, sighandler);
 		char* IP = "127.0.0.1";
 		if (argc > 1){
 			strcpy(IP, argv[1]);

@@ -93,6 +93,8 @@
 	//Main server logic
 	//Runs server_logic_loop
 	int main (){
+		//creates directory for user stats
+		mkdir("userStats", 0777);
 		//one time setup for a listening socket
 		setup_sighandlers();
 		int listen_socket = server_setup();

@@ -21,4 +21,4 @@ GameLogic.o: GameLogic.c GameLogic.h
 	@gcc -Wall -c GameLogic.c
 
 clean:
-	rm -f *.o *~ client server
+	rm -rf *.o *~ client server userStats *.lock
