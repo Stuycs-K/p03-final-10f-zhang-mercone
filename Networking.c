@@ -93,6 +93,7 @@
 		int gamesPlayed = 0;
 		int Ascore = 0;
 		int Bscore = 0;
+		sendUsernames(fdA, fdB);
 		while(stillWantGame == 1){
 			send(fdA, &gamesPlayed, sizeof(int), 0);
 			send(fdB, &gamesPlayed, sizeof(int), 0);
@@ -159,8 +160,8 @@
 
 
 	int getUsername(int fd, char name[]){
-		int sendIdRequest = 011; // special int for getting id
-		send(fd, &sendIdRequest, sizeof(int), 0);
+		//int sendIdRequest = 011; // special int for getting id
+		//send(fd, &sendIdRequest, sizeof(int), 0);
 		if(recv(fd, name, 64, 0) == 0){
 			return 0;
 		}
@@ -205,8 +206,8 @@
 			}
 		}
 		//debug
-		//send(fdA, &BName, 64, 0);
-		//send(fdB, &AName, 64, 0);
+		send(fdA, &BName, sizeof(BName), 0);
+		send(fdB, &AName, sizeof(AName), 0);
 		printf ("Aname %s Bname %s", AName, BName);
 	}
 
