@@ -33,4 +33,5 @@ Key Commands
 - Stack Exchange
 
 ### Video Link:
-- https://drive.google.com/file/d/1Y6GsGzxmyIZGwJJlFGxWZrgRxaY7B4uB/view?usp=sharing (please email luciam25@nycstudent.net if this doesn't work)
+- NYC DOE: https://drive.google.com/file/d/1Y6GsGzxmyIZGwJJlFGxWZrgRxaY7B4uB/view?usp=sharing
+- Stuy.edu: https://drive.google.com/file/d/1WdfLIeZcfkR7q4t8B916qb03Wbi61-7C/view?usp=sharing
